@@ -29,7 +29,8 @@ export default function Profile() {
   const dispatch = useDispatch();
   const fileRef = useRef(null);
 
-  // Inicializamos updateUser con valores del user (si existe)
+  const [editEnabled, setEditEnabled] = useState(false);
+
   const [updateUser, setUpdateUser] = useState({
     userName: user?.userName || "",
     email: user?.email || "",
@@ -37,48 +38,67 @@ export default function Profile() {
     password: "",
   });
 
+  const [originalUser, setOriginalUser] = useState(updateUser);
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
-  // VALIDATION STATES
   const [validUserName, setValidUserName] = useState(true);
   const [validEmail, setValidEmail] = useState(true);
   const [validPassword, setValidPassword] = useState(true);
-  const [img, setImg] = useState(null);
-  const [previewImg, setPreviewImg] = useState(null); // preview de la imagen
 
-  /* =========================
-     VALIDATIONS
-  ========================== */
+  const [img, setImg] = useState(null);
+  const [previewImg, setPreviewImg] = useState(null);
+
+  /* ================= VALIDATIONS ================= */
   useEffect(() => {
-    if (updateUser.userName !== undefined) {
-      setValidUserName(userNameRegex.test(updateUser.userName));
-    }
+    setValidUserName(userNameRegex.test(updateUser.userName));
   }, [updateUser.userName]);
 
   useEffect(() => {
-    if (updateUser.email !== undefined) {
-      setValidEmail(emailRegex.test(updateUser.email));
-    }
+    setValidEmail(emailRegex.test(updateUser.email));
   }, [updateUser.email]);
 
   useEffect(() => {
-    if (updateUser.password !== undefined && updateUser.password !== "") {
+    if (updateUser.password) {
       setValidPassword(passwordRegex.test(updateUser.password));
     } else {
-      setValidPassword(true); // si está vacío no validamos
+      setValidPassword(true);
     }
   }, [updateUser.password]);
 
-  // Limpiar URL temporal al desmontar o cambiar imagen
   useEffect(() => {
-    return () => {
-      if (previewImg) URL.revokeObjectURL(previewImg);
-    };
-  }, [previewImg]);
+    if (!updateSuccess) return;
+    const timer = setTimeout(() => setUpdateSuccess(false), 2000);
+    return () => clearTimeout(timer);
+  }, [updateSuccess]);
 
-  /* =========================
-     UPLOAD IMAGE
-  ========================== */
+  /* ================= HELPERS ================= */
+  const hasChanges =
+    JSON.stringify(updateUser) !== JSON.stringify(originalUser) || img;
+
+  const enterEditMode = () => {
+    setEditEnabled(true);
+    setOriginalUser(updateUser);
+    setUpdateSuccess(false);
+  };
+
+  const exitEditMode = async () => {
+    if (hasChanges) {
+      const confirmSave = window.confirm(
+        "Tenés cambios sin guardar. ¿Querés guardarlos?"
+      );
+
+      if (confirmSave) {
+        await handleUpdate();
+      } else {
+        setUpdateUser(originalUser);
+        setImg(null);
+        setPreviewImg(null);
+      }
+    }
+    setEditEnabled(false);
+  };
+
+  /* ================= UPLOAD IMAGE ================= */
   const uploadImage = async (img) => {
     const formData = new FormData();
     formData.append("file", img);
@@ -86,9 +106,7 @@ export default function Profile() {
     return res.url;
   };
 
-  /* =========================
-     HANDLE UPDATE USER
-  ========================== */
+  /* ================= HANDLE UPDATE ================= */
   const handleUpdate = async () => {
     if (!validUserName || !validEmail || !validPassword) return;
 
@@ -96,12 +114,12 @@ export default function Profile() {
       dispatch(updateUserStart());
 
       let profileImageUrl = updateUser.profileImage;
+
       if (img) {
         const url = await uploadImage(img);
-        if (url) profileImageUrl = url; // reemplazamos con la URL real
+        if (url) profileImageUrl = url;
       }
 
-      // Armamos el objeto final para enviar al backend
       const updatedData = {
         ...updateUser,
         profileImage: profileImageUrl,
@@ -113,107 +131,132 @@ export default function Profile() {
       dispatch(setAccessToken(res.payload.accessToken));
 
       setUpdateSuccess(true);
+      setEditEnabled(false);
+      setImg(null);
+      setPreviewImg(null);
     } catch (err) {
       dispatch(updateUserFailure(err.message));
     }
   };
 
-  /* =========================
-     RENDER
-  ========================== */
-  // Esperamos a que user exista para renderizar el formulario
   if (!user) return <p>Loading profile...</p>;
 
   return (
-    <div className="profile-container">
-      <div className="profile-header">
-        <h2>Edit Profile</h2>
-        <button
-          className="save-btn"
-          disabled={loading}
-          onClick={handleUpdate}
-        >
-          ✓
-        </button>
+    <div className="profile-wrapper">
+      <div className="profile-container">
+        <div className="profile-header">
+          <button
+            className="header-icon left"
+            onClick={editEnabled ? exitEditMode : enterEditMode}
+          >
+            {editEnabled ? "✖" : "✏️"}
+          </button>
+
+          <h2>Edit Profile</h2>
+
+          {editEnabled && (
+            <button
+              className="header-icon right"
+              onClick={handleUpdate}
+              disabled={loading}
+            >
+              💾
+            </button>
+          )}
+        </div>
+
+        <div className="profile-image-section">
+          <input
+            type="file"
+            hidden
+            ref={fileRef}
+            accept="image/*"
+            disabled={!editEnabled}
+            onChange={(e) => {
+              const file = e.target.files[0];
+              if (file) {
+                setImg(file);
+                const tempURL = URL.createObjectURL(file);
+                setPreviewImg(tempURL);
+                setUpdateUser((prev) => ({
+                  ...prev,
+                  profileImage: tempURL,
+                }));
+              }
+            }}
+          />
+
+          <img
+            src={previewImg || updateUser.profileImage}
+            alt="profile"
+            className="profile-image"
+            onClick={() => editEnabled && fileRef.current.click()}
+          />
+        </div>
+
+        <form className="profile-form">
+          {/* USERNAME */}
+          <div className="form-group">
+            <div className="label-row">
+              <label>Username</label>
+              {!validUserName && (
+                <span className="error-inline">Invalid username</span>
+              )}
+            </div>
+            <input
+              type="text"
+              value={updateUser.userName}
+              disabled={!editEnabled}
+              onChange={(e) =>
+                setUpdateUser({ ...updateUser, userName: e.target.value })
+              }
+            />
+          </div>
+
+          {/* EMAIL */}
+          <div className="form-group">
+            <div className="label-row">
+              <label>Email</label>
+              {!validEmail && (
+                <span className="error-inline">Invalid email</span>
+              )}
+            </div>
+            <input
+              type="email"
+              value={updateUser.email}
+              disabled={!editEnabled}
+              onChange={(e) =>
+                setUpdateUser({ ...updateUser, email: e.target.value })
+              }
+            />
+          </div>
+
+          {/* PASSWORD */}
+          <div className="form-group">
+            <div className="label-row">
+              <label>Password</label>
+              {!validPassword && (
+                <span className="error-inline">Invalid password</span>
+              )}
+            </div>
+            <input
+              type="password"
+              placeholder="********"
+              disabled={!editEnabled}
+              onChange={(e) =>
+                setUpdateUser({ ...updateUser, password: e.target.value })
+              }
+            />
+          </div>
+
+          {/* SUCCESS SLOT (altura fija) */}
+          <div className="success-slot">
+            {updateSuccess && (
+              <p className="success">Profile updated successfully</p>
+            )}
+          </div>
+        </form>
       </div>
-
-      {/* PROFILE IMAGE */}
-      <div className="profile-image-section">
-        <input
-          type="file"
-          hidden
-          ref={fileRef}
-          accept="image/*"
-          onChange={(e) => {
-            const file = e.target.files[0];
-            if (file) {
-              setImg(file); // Guardamos el archivo
-              const tempURL = URL.createObjectURL(file);
-              setPreviewImg(tempURL); // preview temporal
-              setUpdateUser((prev) => ({
-                ...prev,
-                profileImage: tempURL,
-              }));
-            }
-          }}
-        />
-
-        <img
-          src={previewImg || user?.profileImage || ""}
-          alt="profile"
-          className="profile-image"
-          onClick={() => fileRef.current.click()}
-        />
-      </div>
-
-      {/* FORM */}
-      <form
-        className="profile-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleUpdate();
-        }}
-      >
-        <div className="form-group">
-          <label>Username</label>
-          <input
-            type="text"
-            defaultValue={user?.userName || ""}
-            onChange={(e) =>
-              setUpdateUser({ ...updateUser, userName: e.target.value })
-            }
-          />
-          {!validUserName && <span className="error">Invalid username</span>}
-        </div>
-
-        <div className="form-group">
-          <label>Email</label>
-          <input
-            type="email"
-            defaultValue={user?.email || ""}
-            onChange={(e) =>
-              setUpdateUser({ ...updateUser, email: e.target.value })
-            }
-          />
-          {!validEmail && <span className="error">Invalid email</span>}
-        </div>
-
-        <div className="form-group">
-          <label>Password</label>
-          <input
-            type="password"
-            placeholder="********"
-            onChange={(e) =>
-              setUpdateUser({ ...updateUser, password: e.target.value })
-            }
-          />
-          {!validPassword && <span className="error">Invalid password</span>}
-        </div>
-
-        {updateSuccess && (
-          <p className="success">Profile updated successfully</p>
-        )}
-      </form>
     </div>
   );
 }

@@ -1,137 +1,128 @@
-/* Contenedor principal */
+/* ================= WRAPPER ================= */
+.profile-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* ================= CARD ================= */
 .profile-container {
+  width: 100%;
   max-width: 420px;
-  margin: 40px auto;
-  background-color: #ffffff;
+  background-color: var(--color3);
   border-radius: 18px;
   padding: 24px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(44, 24, 24, 0.08);
   font-family: "Segoe UI", sans-serif;
 }
 
 /* ================= HEADER ================= */
-
 .profile-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 28px;
-  gap: 0.3rem;
+  margin-bottom: 24px;
+  position: relative;
 }
 
 .profile-header h2 {
   font-size: 18px;
   font-weight: 600;
   margin: 0;
+  color: var(--color2);
 }
 
-.back-btn,
-.save-btn {
+/* ICON BUTTONS */
+.header-icon {
+  position: absolute;
   border: none;
   background: none;
-  font-size: 18px;
+  font-size: 20px;
   cursor: pointer;
-  color: #333;
 }
 
-.save-btn {
-  color: #4caf50;
-  font-weight: bold;
+.header-icon.left {
+  left: 0;
+}
+
+.header-icon.right {
+  right: 0;
 }
 
 /* ================= PROFILE IMAGE ================= */
-
 .profile-image-section {
-  position: relative;
   display: flex;
   justify-content: center;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .profile-image {
-  width: 120px;
-  height: 120px;
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #eee;
-}
-
-.change-image-btn {
-  position: absolute;
-  bottom: 6px;
-  right: calc(50% - 60px);
-  background-color: #000;
-  color: #fff;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
-  font-size: 14px;
 }
 
 /* ================= FORM ================= */
-
 .profile-form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  position: relative;
 }
 
-.form-group label {
-  font-size: 13px;
-  color: #666;
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 18px;
   margin-bottom: 6px;
 }
 
+.label-row label {
+  font-size: 13px;
+  color: var(--color1);
+}
+
+.error-inline {
+  font-size: 12px;
+  color: #e74c3c;
+  max-width: 140px;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .form-group input {
-  height: 44px;
+  height: 42px;
   border-radius: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid #e7dede;
   padding: 0 14px;
   font-size: 14px;
   outline: none;
-  transition: border 0.2s ease;
+  color: black;
 }
 
 .form-group input:focus {
-  border-color: #000;
+  border-color: #447058;
 }
 
-/* ================= PASSWORD ================= */
-
-.password-group input {
-  padding-right: 44px;
+/* ================= SUCCESS (altura fija) ================= */
+.success-slot {
+  min-height: 18px; /* evita salto de layout */
 }
 
-.toggle-password {
-  position: absolute;
-  right: 12px;
-  top: 34px;
-  border: none;
-  background: none;
-  cursor: pointer;
-  color: #777;
-  font-size: 15px;
-}
-
-.toggle-password:hover {
-  color: #000;
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media (max-width: 480px) {
-  .profile-container {
-    margin: 20px;
-    padding: 20px;
-  }
+.success {
+  font-size: 13px;
+  text-align: center;
+  color: #2ecc71;
 }
