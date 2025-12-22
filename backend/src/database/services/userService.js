@@ -47,13 +47,7 @@ class userService {
       }
 
       const updated = await userModel.findByIdAndUpdate(
-        id,
-        {
-          userName: updateUser.userName,
-          email: updateUser.email,
-          password: updateUser.password, // hash se maneja en controller
-          profileImage: updateUser.profileImage,
-        },
+        id, updateUser,
         { new: true }
       );
 

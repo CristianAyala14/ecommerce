@@ -20,17 +20,26 @@ class authController {
       }
 
       const hash = await bcrypt.hash(password, 10);
-      const newUser = { email, password: hash };
+
+      const newUser = { 
+        email, password: hash, 
+        userName: email.split("@")[0]
+      };
       const created = await userDao.createUser(newUser);
 
       // auth token
-      const userAuthToken = { id: created._id, email: created.email };
+      const userAuthToken = { 
+        id: created._id,
+        userName: created.userName,
+        email: created.email
+      };
       const accessToken = genAccessToken(userAuthToken);
       const refreshToken = genRefreshToken(userAuthToken);
+
       res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: 'Lax', path: "/api/auth/refresh" });
 
       // payload
-      const user = { id: created._id, email: created.email, profileImage: created.profileImage };
+      const user = { id: created._id, email: created.email, profileImage: created.profileImage, userName: created.userName };
 
       res.status(200).json({
         status: "success",
@@ -98,7 +107,7 @@ class authController {
       }
 
       const email = req.user.email;
-      const userFounded = await userDao.getBy(email);
+      const userFounded = await userDao.getUserByEmail(email);
       if (!userFounded) return res.status(401).json({ message: "Could not refresh the access token. Access denied." });
 
       const user = { id: userFounded._id, userName: userFounded.userName, email: userFounded.email };

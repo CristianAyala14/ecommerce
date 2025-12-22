@@ -35,19 +35,26 @@ class userController {
           message: "Unauthorized: user ID missing.",
         });
       }
+      const validUser = await userDao.getUserById(req.user.id);
+      if (!validUser) return res.status(400).json({ message: "User not found." });
 
-      if (!req.body || Object.keys(req.body).length === 0) {
-        return res.status(400).json({
-          status: "error",
-          message: "Request body cannot be empty.",
-        });
-      }
-      if (req.body.password) {
-        const hash = await bcrypt.hash(req.body.password, 10);
-        req.body.password = hash;
-      }
+      const {email, userName, password, profileImage} = req.body;
+      const updatedData ={};
 
-      const updated = await userDao.updateUser(req.user.id, req.body);
+      if (password) {
+        const hash = await bcrypt.hash(password, 10);
+        updatedData.password = hash;
+      }else{
+        updatedData.password = validUser.password;
+      }
+      
+      updatedData.email = email? email : validUser.email;
+      updatedData.userName = userName? userName : validUser.userName;
+      updatedData.profileImage = profileImage? profileImage : validUser.profileImage;
+      
+
+
+      const updated = await userDao.updateUser(req.user.id, updatedData);
 
       // auth token
       const newUserAuthToken = {

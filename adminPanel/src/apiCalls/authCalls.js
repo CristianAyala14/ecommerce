@@ -10,7 +10,7 @@ export async function signUpReq(user) {
       payload: {
         user: response.data.payload,
         accessToken: response.data.accessToken,
-s      }
+      }
     };
   } catch (error) {
     return {

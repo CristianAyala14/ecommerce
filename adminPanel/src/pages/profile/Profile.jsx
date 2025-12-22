@@ -18,7 +18,7 @@ import { updateUserReq } from "../../apiCalls/userCalls";
 import { uploadProfileImgReq } from "../../apiCalls/uploadCalls";
 
 /* REGEX */
-const userNameRegex = /^[a-zA-Z][a-zA-Z0-9-_]{3,15}$/;
+const userNameRegex = /^[a-zA-Z][a-zA-Z0-9-_]{3,20}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,16}$/;
@@ -43,7 +43,6 @@ export default function Profile() {
   const [validUserName, setValidUserName] = useState(true);
   const [validEmail, setValidEmail] = useState(true);
   const [validPassword, setValidPassword] = useState(true);
-
   const [img, setImg] = useState(null);
   const [previewImg, setPreviewImg] = useState(null); // preview de la imagen
 
