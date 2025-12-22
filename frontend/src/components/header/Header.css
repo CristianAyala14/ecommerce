@@ -1,0 +1,208 @@
+/* ========================================================= */
+/* HEADER GENERAL */
+/* ========================================================= */
+header {
+  background-color: var(--color3);
+  padding-inline: 0.5rem;
+  width: 100%;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color1);
+  position: sticky;
+  top: 0;
+  z-index: 100; /* queda debajo del menú mobile */
+}
+
+.logo {
+  max-width: 2rem;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 1rem;
+}
+
+.open-menu {
+  display: none;
+}
+
+/* ========================================================= */
+/* NAV DESKTOP */
+/* ========================================================= */
+.nav {
+  height: 100%;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.nav-list li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  position: relative; /* referencia para dropdown */
+}
+
+.nav-options-wrapper {
+  position: relative;
+}
+
+.nav-options {
+  text-decoration: none;
+  font-size: 0.55rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  color: var(--color1);
+  cursor: pointer;
+}
+
+.nav-options:hover {
+  color: var(--color1);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease-in-out;
+}
+
+.close-menu {
+  font-size: 1rem;
+  display: none;
+}
+
+/* ========================================================= */
+/* CART + USER */
+/* ========================================================= */
+
+.header-order-icon {
+  color: var(--color1);
+  font-size: 1rem;
+  display: flex;
+  text-decoration: none;
+}
+.counter-order{
+  font-size: 0.5rem;
+  position: absolute;
+  background-color: red;
+  padding-inline: 0.2rem;
+  border-radius: 1rem;
+  right: 0;
+}
+
+
+
+/* ========================================================= */
+/* MOBILE */
+/* ========================================================= */
+@media screen and (max-width: 1100px) {
+  .open-menu {
+    font-size: 1.3rem;
+    display: block;
+    z-index: 99999;
+  }
+
+  .close-menu {
+    display: block;
+    color: var(--color3);
+    z-index: 100000;
+  }
+
+  .close-menu:hover {
+    color: var(--color4);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+  }
+
+  /* NAV OCULTA */
+  .nav {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    top: 2.5rem;
+    right: 0;
+    width: 10rem;
+    height: auto;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    background-color: rgba(212, 218, 217, 0.95);
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    justify-content: flex-start;
+    z-index: 9999 !important;
+  }
+
+  /* NAV VISIBLE */
+  .nav.visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 9999 !important;
+  }
+
+  .nav-list {
+    padding: 0.3rem;
+    gap: 0.8rem;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-options {
+    color: var(--color3);
+    font-size: 0.75rem;
+  }
+
+  .nav-options:hover {
+    color: var(--color4);
+  }
+
+   /* 🔥 Ocultar dropdown solo en mobile */
+  .header-dropdown {
+    display: none !important;
+  }
+}
+
+/* ========================================================= */
+/* DROPDOWN FINAL */
+/* ========================================================= */
+
+.nav-list li.nav-options-wrapper .header-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: rgba(55, 81, 122, 0.95);
+  padding: 0.3rem;
+  padding-right: 1rem;
+  border-radius: 0rem 0.5rem 0.5rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: auto;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+  z-index: 9999;
+}
+
+.nav-list li.nav-options-wrapper .dropdown-item {
+  cursor: pointer;
+  font-size: 0.6rem;
+  padding: 0.3rem 0.2rem;
+  border-radius: 4px;
+  transition: 0.2s ease;
+}
+
+.nav-list li.nav-options-wrapper .dropdown-item:hover {
+  border-bottom: 1px solid var(--color1);
+  color: var(--color1);
+}

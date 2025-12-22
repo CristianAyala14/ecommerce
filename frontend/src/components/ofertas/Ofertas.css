@@ -1,0 +1,126 @@
+/* =========================
+   CONTENEDOR GENERAL
+========================= */
+.ofertas-container {
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  padding: 4rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* =========================
+   TÍTULOS
+========================= */
+.ofertas-title {
+  font-size: 1.3rem;
+  font-family: "Bungee", sans-serif;
+  font-weight: 400;
+  color: var(--color2);
+}
+
+.ofertas-text {
+  margin-top: 0.3rem;
+  color: var(--color5);
+  font-family: "Kanit", sans-serif;
+  font-weight: 200;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* =========================
+   PAGINACIÓN
+========================= */
+.ofertas-pagination {
+  margin-top: 1rem;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+
+  color: var(--color2);
+  font-family: "Kanit", sans-serif;
+  font-weight: 200;
+  font-size: 0.6rem;
+}
+
+.ofertas-pagination button {
+  background-color: var(--color4);
+  border-radius: 1rem;
+  padding: 0.2rem 0.4rem;
+  color: var(--color1);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.ofertas-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ofertas-pagination span {
+  font-size: 0.6rem;
+}
+
+/* =========================
+   GRID (AHORA FLEX) DE PRODUCTOS
+========================= */
+.ofertas-grid {
+  margin-top: 2rem;
+  display: flex;            /* 🔥 flex en lugar de grid */
+  flex-wrap: wrap;          /* permite que los items bajen de fila */
+  justify-content: center;  /* 🔥 centrado horizontal */
+  gap: 1rem;                /* espacio entre items */
+  width: 100%;
+  max-width: 1200px;
+  box-sizing: border-box;
+  padding-inline: 0.5rem;   /* evita que se pegue al borde */
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+/* Tablets */
+@media (max-width: 992px) {
+  .ofertas-grid {
+    gap: 0.9rem;
+  }
+}
+
+/* Tablets chicas */
+@media (max-width: 768px) {
+  .ofertas-title {
+    font-size: 1.1rem;
+  }
+
+  .ofertas-text {
+    font-size: 0.8rem;
+  }
+
+  .ofertas-grid {
+    gap: 0.8rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .ofertas-grid {
+    gap: 0.6rem;
+  }
+
+  .ofertas-pagination span {
+    font-size: 0.55rem;
+  }
+}
+
+.no-offers, .loading-offers{
+  color: var(--color1);
+  font-size: 0.8rem;
+}

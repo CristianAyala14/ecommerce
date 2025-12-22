@@ -1,0 +1,5 @@
+.products-container{
+    height: auto;
+    background-color: var(--color3);
+    padding: 0.3rem;
+}

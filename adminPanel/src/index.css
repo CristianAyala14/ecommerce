@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  font-size: 1.65rem;
+}
+body{
+  overflow-x: hidden;
+}
+
+:root {
+  --color1: #e7beb7;
+  --color2: #d9ccba;
+  --color3: #123552;
+  --color4: #186a73;
+  --color5: #b3c4c0;
+}

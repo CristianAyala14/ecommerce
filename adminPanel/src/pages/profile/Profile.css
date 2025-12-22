@@ -1,0 +1,136 @@
+/* Contenedor principal */
+.profile-container {
+  max-width: 420px;
+  margin: 40px auto;
+  background-color: #ffffff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ================= HEADER ================= */
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.profile-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.back-btn,
+.save-btn {
+  border: none;
+  background: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #333;
+}
+
+.save-btn {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+/* ================= PROFILE IMAGE ================= */
+
+.profile-image-section {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.profile-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #eee;
+}
+
+.change-image-btn {
+  position: absolute;
+  bottom: 6px;
+  right: calc(50% - 60px);
+  background-color: #000;
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ================= FORM ================= */
+
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.form-group label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 0 14px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #000;
+}
+
+/* ================= PASSWORD ================= */
+
+.password-group input {
+  padding-right: 44px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 34px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #777;
+  font-size: 15px;
+}
+
+.toggle-password:hover {
+  color: #000;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 480px) {
+  .profile-container {
+    margin: 20px;
+    padding: 20px;
+  }
+}

@@ -1,0 +1,76 @@
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+  user: null,
+  error: null,
+  loading:false,
+  isAuthenticated: false,
+  accessToken: null
+}
+
+const userSlice = createSlice({
+  name: "user",
+  initialState,
+  reducers: {
+    defaultState: (state)=>{
+      state.user= null;
+      state.error= null;
+      state.loading=false;
+      state.isAuthenticated=false
+      state.accessToken=false
+    },
+    errorStart: (state)=>{
+      state.error = null;
+    },
+    signInStart: (state)=>{
+      state.loading = true
+    },
+    signInSuccess: (state, action)=>{
+      state.user = action.payload;
+      state.loading = false;
+      state.error = null;
+      state.isAuthenticated= true;
+    },
+    signInFailure: (state, action)=>{
+      state.user = null;
+      state.loading = false;
+      state.error = action.payload;
+      state.isAuthenticated= false;
+    },
+    updateUserStart:(state)=>{
+      state.loading = true;
+    },
+    updateUserSuccess:(state, action)=>{
+      state.user = action.payload;
+      state.loading = false;
+      state.error = null;
+      state.isAuthenticated = true;
+    },
+    updateUserFailure: (state,action)=>{
+      state.error = action.payload;
+      state.loading = false;
+    },
+    deleteUserStart:(state)=>{
+      state.loading = true;
+    },
+    deleteUserSuccess:(state, action)=>{
+      state.user = null;
+      state.loading = false;
+      state.error = null;
+      state.isAuthenticated = false;
+    },
+    deleteUserFailure: (state,action)=>{
+      state.error = action.payload;
+      state.loading = false;
+    },
+    setAccessToken:(state,action)=>{
+      state.accessToken = action.payload
+    },
+  }
+});
+
+export const {signInFailure, signInSuccess, signInStart, 
+  errorStart,defaultState, setAccessToken, updateUserStart,
+  updateUserSuccess,updateUserFailure, deleteUserStart,
+   deleteUserSuccess, deleteUserFailure} =userSlice.actions;
+export default userSlice.reducer;

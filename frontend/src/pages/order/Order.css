@@ -1,0 +1,124 @@
+.order-container{
+  padding: 1rem;
+  height: auto;
+}
+
+.order-content{
+  padding: 0.3rem;
+  display: flex;
+  gap: 0.5rem;
+  height: 15rem;
+}
+
+.order-cards{
+  border: 1px solid rgb(202, 202, 206);
+  border-radius: 0.5rem;
+  width: 60%;
+  padding: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  overflow-y: scroll;
+}
+
+.order-cards p, .order-details p{
+  font-size: 0.8rem;
+}
+
+.order-details{
+  border: 1px solid rgb(202, 202, 206);
+  border-radius: 0.5rem;
+  width: 40%;
+  height: 100%;
+  padding: 0.3rem;
+}
+
+.order-details-lines-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+    height: 100%; /* 👈 clave */
+}
+.order-details-lines-container p{
+  font-size: 0.7rem;
+}
+
+
+.order-line-subtotal, .order-line-total{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.order-line-title{
+  font-weight: bolder;
+
+}
+
+.order-line-total{
+  border-top: 1px solid black;
+  padding-top: 0.5rem;
+}
+
+
+
+.loading-order-p, .no-order-p{
+  color: var(--color4);
+  padding: 1rem;
+  font-size: 0.8rem;
+  text-align: center;
+  padding-block: 10rem;
+}
+
+
+.pay-button-container{
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.pay-button {
+  padding-inline: 0.5rem;
+  background-color: #4dce41;
+  color: #fff;
+  border: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.pay-button:hover {
+  opacity: 0.85;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+
+  .order-container{
+    height: auto;
+  }
+
+  .order-content{
+    flex-direction: column;
+    height: auto;
+  }
+
+  .order-cards,
+  .order-details{
+    width: 100%;
+  }
+
+  .order-cards{
+    overflow-y: visible;
+  }
+
+  .pay-button-container{
+    justify-content: center;
+  }
+
+  .pay-button{
+    width: 100%;
+  }
+}
+

@@ -1,0 +1,88 @@
+/* CARD GENERAL */
+.item-card {
+  flex: 0 0 auto;          /* 🔥 evita que la card se achique en el carrusel */
+  width: 8rem; 
+  height: 10rem;   
+  background-color: rgba(218, 46, 46, 0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(244, 245, 247, 0.4);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+
+.item-card:hover {
+  transform: translateY(-5px);
+}
+
+/* CONTENEDOR DE LA IMAGEN */
+.item-image-wrapper {
+  width: 100%;
+  height: 65%;           /* podés ajustar */
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid #ececec;
+}
+
+.item-image-wrapper a {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
+
+/* IMAGEN */
+.item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* 🔥 para que no se deforme */
+}
+
+/* INFORMACIÓN DEL PRODUCTO */
+.item-info {
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+  word-wrap: wrap;
+  height: 35%;
+  background-color: rgb(35, 50, 59)
+}
+
+.item-title {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--color2)
+}
+
+/* PRECIOS */
+.item-prices {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.item-new-price {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #27ae60;           /* verde */
+}
+
+.item-old-price {
+  font-size: 0.8rem;
+  text-decoration: line-through;
+  color: #a83e3e;
+}
+
+
+@media (max-width: 550px) {
+
+  .item-card {
+  width: 7rem; 
+  height: 12rem;           /* tamaño estándar */
+}
+}

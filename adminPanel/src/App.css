@@ -1,0 +1,9 @@
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-content {
+  width: 100%;
+  border: 1px solid red;
+}

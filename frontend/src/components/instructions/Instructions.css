@@ -1,0 +1,145 @@
+.instructions-section {
+  width: 100%;
+  padding: 4rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5rem;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.instructions-card {
+  position: relative;
+  width: 12rem;
+  padding-top: 5rem; /* espacio para imagen que sobresale */
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 1.5rem;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 5rem;
+}
+
+.instructions-img-container {
+  position: absolute;
+  top: -3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 14rem;
+  height: 170px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.instructions-img {
+  z-index: 2;
+  position: relative;
+}
+
+.instruction-img1 {
+  width: 7rem;
+  height: auto;
+}
+
+.instruction-img2 {
+  width: 5rem;
+  height: 8rem;
+  top: 1rem;
+}
+
+.instruction-img3 {
+  width: 8rem;
+  height: auto;
+  top: 1rem;
+}
+
+.instructions-glow {
+  position: absolute;
+  bottom: -70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 25px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 50%;
+  filter: blur(20px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.instructions-text {
+  margin-top: 1.5rem;
+  color: white;
+  font-size: 1rem;
+  font-family: "Kanit", sans-serif;
+  text-align: center;
+}
+
+/* --- Responsive --- */
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .instructions-section {
+    gap: 3rem;
+    padding: 3rem 1rem;
+  }
+  .instructions-card {
+    width: 13rem;
+    padding-top: 4rem;
+  }
+  .instructions-img-container {
+    width: 12rem;
+    height: 150px;
+    top: -2.5rem;
+  }
+  .instruction-img1 { width: 6rem; }
+  .instruction-img2 { width: 4.5rem; height: 7rem; }
+  .instruction-img3 { width: 7rem; }
+  .instructions-text { font-size: 0.95rem; }
+}
+
+/* Móviles */
+@media (max-width: 768px) {
+  .instructions-section {
+    gap: 2rem;
+    padding: 2rem 1rem;
+  }
+  .instructions-card {
+    width: 11rem;
+    padding-top: 3.5rem;
+  }
+  .instructions-img-container {
+    width: 10rem;
+    height: 130px;
+    top: -2rem;
+  }
+  .instruction-img1 { width: 5.5rem; }
+  .instruction-img2 { width: 4rem; height: 6.5rem; }
+  .instruction-img3 { width: 6rem; }
+  .instructions-text { font-size: 0.9rem; }
+}
+
+/* Móviles pequeños */
+@media (max-width: 480px) {
+  .instructions-section {
+    gap: 1rem;
+    padding: 1.5rem 0.5rem;
+  }
+  .instructions-card {
+    width: 9rem;
+    padding-top: 3rem;
+  }
+  .instructions-img-container {
+    width: 8rem;
+    height: 110px;
+    top: -1.5rem;
+  }
+  .instruction-img1 { width: 4.5rem; }
+  .instruction-img2 { width: 3.5rem; height: 6rem; }
+  .instruction-img3 { width: 5.5rem; }
+  .instructions-text { font-size: 0.85rem; }
+}
