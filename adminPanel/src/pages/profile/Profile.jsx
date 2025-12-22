@@ -143,7 +143,7 @@ export default function Profile() {
 
   return (
     <div className="profile-wrapper">
-      <div className="profile-container">
+      <div className={`profile-container ${editEnabled ? "edit-mode" : ""}`}>
         <div className="profile-header">
           <button
             className="header-icon left"
@@ -189,7 +189,9 @@ export default function Profile() {
           <img
             src={previewImg || updateUser.profileImage}
             alt="profile"
-            className="profile-image"
+            className={`profile-image ${
+              editEnabled ? "editable" : "readonly"
+            }`}
             onClick={() => editEnabled && fileRef.current.click()}
           />
         </div>
@@ -249,7 +251,6 @@ export default function Profile() {
             />
           </div>
 
-          {/* SUCCESS SLOT (altura fija) */}
           <div className="success-slot">
             {updateSuccess && (
               <p className="success">Profile updated successfully</p>

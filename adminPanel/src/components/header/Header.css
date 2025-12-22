@@ -7,6 +7,7 @@
   align-items: center;
   padding-block: 0.5rem;
   background-color: var(--color3);
+  position: relative;
 }
 
 .logo {
@@ -28,7 +29,6 @@
   margin: 0;
 }
 
-/* ✅ EL ITEM (NavLink) */
 .nav-item {
   text-decoration: none;
   color: var(--color2);
@@ -40,13 +40,11 @@
   transition: background-color 0.2s ease, filter 0.2s ease;
 }
 
-/* ✅ HOVER */
 .nav-item:hover {
   background-color: rgba(255, 255, 255, 0.1);
   filter: brightness(1.2);
 }
 
-/* ✅ ACTIVE (NavLink) */
 .nav-item.active {
   background-color: rgba(255, 255, 255, 0.15);
   font-weight: 600;
@@ -60,7 +58,7 @@
   font-size: 0.7rem;
 }
 
-/* BOTÓN LOGOUT */
+/* ================= LOGOUT ================= */
 .logOut-button {
   border-radius: 3rem;
   border: 0;
@@ -78,14 +76,34 @@
 .logOut-button:hover {
   filter: brightness(1.2);
   background-color: rgba(255, 255, 255, 0.1);
-  color: var(--color1)
+  color: var(--color1);
 }
 
-.user-button{
-  position: absolute;
-  right: 0.3rem;
-  top: 0.3rem;
+/* ================= USER AVATAR ================= */
+.user-button {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
+
+  width: 2.2rem;
+  height: 2.2rem;
+
+  border-radius: 50%;
+  padding: 0;
+  border: none;
+
+  overflow: hidden; /* 🔑 CLAVE */
+  background: none;
   cursor: pointer;
+}
+
+/* IMAGEN DENTRO DEL BOTÓN */
+.header-profile-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 🔑 CLAVE */
+  border-radius: 50%;
+  display: block;
 }
 
 /* 📱 MOBILE */

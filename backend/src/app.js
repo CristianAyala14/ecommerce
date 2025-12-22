@@ -5,6 +5,11 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import morgan from "morgan";
 
+//FRONTends conecctions
+const allowedOrigins = [
+  envObject.frontend.public, // frontend público
+  envObject.frontend.panel_admin // panel admin
+];
 
 //routes imports
 import { productsRouter } from "./routes/productsRouter.js"; 
@@ -18,7 +23,9 @@ import { imgRouter } from "./routes/imgRouter.js";
 const app = express()
 app.use(express.urlencoded({extended: true}));
 app.use(express.json())
-app.use(cors({origin:envObject.frontend.link, credentials: true}))
+app.use(cors({
+    origin: allowedOrigins, 
+    credentials: true}))
 app.use(cookieParser())
 app.use(morgan("dev"))
 

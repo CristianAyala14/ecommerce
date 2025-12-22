@@ -5,14 +5,14 @@
   align-items: center;
   justify-content: center;
   padding: 16px;
-  background-color: var(--color2)
+  background-color: var(--color5);
 }
 
 /* ================= CARD ================= */
 .profile-container {
   width: 100%;
   max-width: 420px;
-  background-color: var(--color3);
+  background-color: white;
   border-radius: 18px;
   padding: 24px;
   box-shadow: 0 10px 30px rgba(44, 24, 24, 0.08);
@@ -32,10 +32,9 @@
   font-size: 18px;
   font-weight: 600;
   margin: 0;
-  color: var(--color2);
+  color: var(--color3);
 }
 
-/* ICON BUTTONS */
 .header-icon {
   position: absolute;
   border: none;
@@ -65,7 +64,18 @@
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #eee;
+  transition: border-color 0.3s ease;
+}
+
+/* 👇 SOLO EN EDICIÓN */
+.profile-image.editable {
   cursor: pointer;
+  border-color: #2ecc71;
+}
+
+/* 👇 SOLO LECTURA */
+.profile-image.readonly {
+  cursor: default;
 }
 
 /* ================= FORM ================= */
@@ -89,8 +99,16 @@
 }
 
 .label-row label {
-  font-size: 13px;
-  color: var(--color1);
+  font-size: 0.5rem;
+  font-weight: bolder;
+  margin-bottom: 0.5rem;
+  color: var(--color3);
+  transition: opacity 0.3s ease;
+}
+
+/* 👇 LABELS APAGADOS CUANDO NO EDITA */
+.profile-container:not(.edit-mode) .label-row label {
+  opacity: 0.35;
 }
 
 .error-inline {
@@ -111,15 +129,21 @@
   font-size: 14px;
   outline: none;
   color: black;
+  transition: border-color 0.3s ease;
+}
+
+/* 👇 BORDES VERDES SOLO EN EDICIÓN */
+.profile-container.edit-mode .form-group input:enabled {
+  border-color: #2ecc71;
 }
 
 .form-group input:focus {
   border-color: #447058;
 }
 
-/* ================= SUCCESS (altura fija) ================= */
+/* ================= SUCCESS ================= */
 .success-slot {
-  min-height: 18px; /* evita salto de layout */
+  min-height: 18px;
 }
 
 .success {

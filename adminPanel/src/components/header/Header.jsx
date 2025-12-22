@@ -2,12 +2,13 @@ import "./Header.css";
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
 import logo from "../../assets/logo.jpg";
-import {useAuthContext} from "../../contexts/authContext"
+import { useAuthContext } from "../../contexts/authContext";
+import { useSelector } from "react-redux";
 
 export default function Header() {
+  const { user } = useSelector((state) => state.user);
+  const { logOut } = useAuthContext();
 
-  const {logOut} = useAuthContext()
-  
   return (
     <div className="header-container">
       <Link to="/dashboard">
@@ -42,13 +43,19 @@ export default function Header() {
         <button className="logOut-button" onClick={logOut}>
           <i className="fa-solid fa-arrow-right-from-bracket"></i>
         </button>
-        <Link to="/profile">
-          <button className="user-button">
-            <i className="fa-solid fa-user"></i>
-          </button>
-        </Link>
+
+        {user && (
+          <Link to="/profile">
+            <button className="user-button">
+              <img
+                src={user.profileImage}
+                alt="profile"
+                className="header-profile-image"
+              />
+            </button>
+          </Link>
+        )}
       </div>
-      
     </div>
   );
 }

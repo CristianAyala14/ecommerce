@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Order.css";
 import OrderCard from "../../components/orderCard/OrderCard";
-import { useOrder } from "../../contexts/orderContext";
+import { useOrderContext } from "../../contexts/orderContext";
 
 export default function Order() {
   const {
@@ -10,7 +10,7 @@ export default function Order() {
     updateQuantity,
     removeItem,
     clear,
-  } = useOrder();
+  } = useOrderContext();
 
  
 
