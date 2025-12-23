@@ -13,7 +13,8 @@ import Orders from "./pages/orders/Orders"
 import OrderDetail from "./pages/orderDetail/OrderDetail"
 import Profile from "./pages/profile/Profile"
 import "./App.css"
-
+import ForgotPassword from "./pages/forgotPassword/ForgotPassword";
+import ResetPassword from "./pages/resetPassword/ResetPassword";
 
 function App() {
   return (
@@ -43,6 +44,11 @@ function App() {
 
               {/* PROFILE */}
               <Route path="/profile" element={<Profile />} />
+
+              {/* FORGOT PASSWORD? */}
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              {/* FORGOT PASSWORD? */}
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
             </Routes>
           </main>        
         </div>

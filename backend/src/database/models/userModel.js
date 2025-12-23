@@ -20,7 +20,9 @@ const userSchema = new mongoose.Schema({
     profileImage: {
       type: String, // Almacena la URL o path de la imagen
       default: "https://muytecnologicos.com/wp-content/uploads/2023/04/Autenticacion-de-usuario.png"
-    }
+    },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
     
 
 }, {timestamps:true})

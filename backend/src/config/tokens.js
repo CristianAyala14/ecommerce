@@ -20,3 +20,16 @@ export const checkRefreshToken = (token) => {
   const tokenVerified = jwt.verify(token, envObject.refreshjwt.key)
   return tokenVerified;
 }
+
+
+export const genResetPasswordToken = (user) => {
+  return jwt.sign(
+    { id: user._id, email: user.email },
+    envObject.accessjwt.key,
+    { expiresIn: "15m" }
+  );
+};
+
+export const checkResetPasswordToken = (token) => {
+  return jwt.verify(token, envObject.accessjwt.key);
+};

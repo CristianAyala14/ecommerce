@@ -1,13 +1,20 @@
-import {Router} from "express";
+import { Router } from "express";
 import { authController } from "../controllers/authController.js";
-//middleware zod
+
+// middleware zod
 import { schemaValidator } from "../middlewares/schemaValidator.js";
 import { signUpSchema, signInSchema } from "../config/zod.js";
 import { validateRefreshToken } from "../middlewares/validateRefreshToken.js";
 
-const router = Router()
-router.post("/signup", schemaValidator(signUpSchema),authController.signUp )
-router.post("/signin", schemaValidator(signInSchema),authController.signIn )
-router.get("/logout", authController.logout)
-router.get("/refresh", validateRefreshToken, authController.refreshToken)
-export {router as authRouter};
+const router = Router();
+
+router.post("/signup", schemaValidator(signUpSchema), authController.signUp);
+router.post("/signin", schemaValidator(signInSchema), authController.signIn);
+router.get("/logout", authController.logout);
+router.get("/refresh", validateRefreshToken, authController.refreshToken);
+
+// 🔐 forgot / reset password
+router.post("/forgot-password", authController.forgotPassword);
+router.post("/reset-password/:token", authController.resetPassword);
+
+export { router as authRouter };

@@ -77,3 +77,43 @@ export async function refreshTokenReq() {
     };
   }
 }
+
+
+export async function forgotPasswordEmail(email) {
+  try {
+    const response = await axiosCall.post("/auth/forgot-password", {email});
+    return {
+      ok: true,
+      status: response.status,
+      message: response.data.message
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: error.status,
+      message: error.message,
+    };
+  }
+}
+
+export async function resetPasswordReq(token, password) {
+  try {
+    const response = await axiosCall.post(
+      `/auth/reset-password/${token}`,
+      { password }
+    );
+
+    return {
+      ok: true,
+      status: response.status,
+      message: response.data.message,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: error.response?.status,
+      message: error.response?.data?.message || "Error resetting password",
+    };
+  }
+}
+

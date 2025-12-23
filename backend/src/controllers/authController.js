@@ -1,7 +1,7 @@
 import { userDao } from "../database/dao_exports.js";
 import bcrypt from "bcryptjs";
-import { genAccessToken, genRefreshToken } from "../config/tokens.js";
-
+import { genAccessToken, genRefreshToken, genResetPasswordToken, checkResetPasswordToken } from "../config/tokens.js";
+import { sendResetPasswordEmail } from "../config/mailService.js";
 
 class authController {
 
@@ -124,6 +124,75 @@ class authController {
       return res.status(500).json({ message: error.message });
     }
   }
+
+  static forgotPassword = async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email is required." });
+      }
+
+      const user = await userDao.getUserByEmail(email);
+
+      // 🔐 No revelar si existe o no
+      if (!user) {
+        return res.status(200).json({
+          message: "If the email exists, a recovery link was sent."
+        });
+      }
+
+      const resetToken = genResetPasswordToken(user);
+      const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+
+      // 👉 acá va tu lógica de mailing
+      console.log("RESET LINK:", resetLink);
+
+      await sendResetPasswordEmail(user.email, resetLink);
+
+      return res.status(200).json({
+        message: "Password recovery email sent."
+      });
+
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  };
+
+  static resetPassword = async (req, res) => {
+    try {
+      const { token } = req.params;
+      const { password } = req.body;
+
+      if (!password) {
+        return res.status(400).json({ message: "New password is required." });
+      }
+
+      const decoded = checkResetPasswordToken(token);
+
+      const user = await userDao.getUserByEmail(decoded.email);
+      if (!user) {
+        return res.status(400).json({ message: "Invalid token." });
+      }
+
+      const hash = await bcrypt.hash(password, 10);
+
+      await userDao.updateUser(user._id, { password: hash });
+
+
+      return res.status(200).json({
+        message: "Password updated successfully."
+      });
+
+    } catch (error) {
+      return res.status(400).json({
+        message: "Token expired or invalid."
+      });
+    }
+  };
+
 }
 
 export { authController };
+
+

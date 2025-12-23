@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import {useAuthContext} from "../../contexts/authContext"
+import { useNavigate } from "react-router-dom";
 
 
 /* REGEX */
@@ -12,10 +13,10 @@ const passwordRegex =
 
 
 export default function LogIn() {
+  const navigate = useNavigate();
+
   const emailRef = useRef(null);
   const {signUp, signIn, error, loading} = useAuthContext()
-
- 
 
   const [isRegister, setIsRegister] = useState(false);
 
@@ -181,7 +182,11 @@ export default function LogIn() {
             <p className="error">{frontErrorMessage}</p>
           )}
         </form>
-
+        <p className="toggle-text">
+          <span onClick={() => navigate("/forgot-password")}>
+            ¿Olvidaste tu contraseña?
+          </span>
+        </p>
         <p className="toggle-text">
           {isRegister ? "Ya estas registrado?" : "No tenes cuenta?"}
           <span onClick={() => setIsRegister(!isRegister)}>
