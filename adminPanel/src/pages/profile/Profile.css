@@ -88,6 +88,7 @@
 .form-group {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .label-row {
@@ -137,17 +138,59 @@
   border-color: #2ecc71;
 }
 
-.form-group input:focus {
+/* 👇 BORDES ROJOS SI ES INVÁLIDO */
+.form-group input:enabled {
+  border-color: #e7dede;
+}
+
+.form-group input:enabled:focus {
   border-color: #447058;
 }
 
-/* ================= SUCCESS ================= */
+/* ================= ICONOS VALIDACION ================= */
+.label-row .icon {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  width: 1.2rem;
+  justify-content: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.label-row .icon.show {
+  visibility: visible;
+  opacity: 1;
+}
+
+.label-row .icon svg {
+  font-size: 0.75rem;
+}
+
+.label-row .icon.valid svg {
+  color: #2ecc71;
+}
+
+.label-row .icon.invalid svg {
+  color: #e74c3c;
+}
+
+/* ================= SUCCESS / ERROR ================= */
 .success-slot {
   min-height: 18px;
+  margin-top: 8px;
 }
 
 .success {
   font-size: 13px;
   text-align: center;
   color: #2ecc71;
+}
+
+.error {
+  font-size: 13px;
+  text-align: center;
+  color: #e74c3c;
 }

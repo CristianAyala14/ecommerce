@@ -35,59 +35,104 @@ class userController {
           message: "Unauthorized: user ID missing.",
         });
       }
+
       const validUser = await userDao.getUserById(req.user.id);
-      if (!validUser) return res.status(400).json({ message: "User not found." });
-
-      const {email, userName, password, profileImage} = req.body;
-      const updatedData ={};
-
-      if (password) {
-        const hash = await bcrypt.hash(password, 10);
-        updatedData.password = hash;
-      }else{
-        updatedData.password = validUser.password;
+      if (!validUser) {
+        return res.status(400).json({ message: "User not found." });
       }
-      
-      updatedData.email = email? email : validUser.email;
-      updatedData.userName = userName? userName : validUser.userName;
-      updatedData.profileImage = profileImage? profileImage : validUser.profileImage;
-      
 
+      const {
+        email,
+        userName,
+        currentPassword,
+        newPassword,
+        profileImage,
+      } = req.body;
+
+      const updatedData = {};
+
+      /* ================= PASSWORD ================= */
+      if (newPassword) {
+        // exigir password actual
+        if (!currentPassword) {
+          return res.status(400).json({
+            status: "error",
+            message: "Current password is required.",
+          });
+        }
+
+        const isValidPassword = await bcrypt.compare(
+          currentPassword,
+          validUser.password
+        );
+
+        if (!isValidPassword) {
+          return res.status(401).json({
+            status: "error",
+            message: "Current password is incorrect.",
+          });
+        }
+
+        const hash = await bcrypt.hash(newPassword, 10);
+        updatedData.password = hash;
+      }
+
+      /* ================= OTHER FIELDS ================= */
+      updatedData.email = email || validUser.email;
+      updatedData.userName = userName || validUser.userName;
+      updatedData.profileImage =
+        profileImage || validUser.profileImage;
 
       const updated = await userDao.updateUser(req.user.id, updatedData);
 
-      // auth token
+      /* ================= TOKENS ================= */
       const newUserAuthToken = {
         id: updated._id,
         userName: updated.userName,
-        email: updated.email
+        email: updated.email,
       };
+
       const accessToken = genAccessToken(newUserAuthToken);
       const refreshToken = genRefreshToken(newUserAuthToken);
 
-      // limpiar cookie anterior y setear nueva
-      res.cookie("refreshToken", "", { httpOnly: true, secure: true, sameSite: 'Strict', path: "/api/auth/refresh", expires: new Date(0) });
-      res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: 'Strict', path: "/api/auth/refresh" });
+      // limpiar cookie anterior
+      res.cookie("refreshToken", "", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+        path: "/api/auth/refresh",
+        expires: new Date(0),
+      });
 
-      // payload
+      // setear nueva
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "Strict",
+        path: "/api/auth/refresh",
+      });
+
       const user = {
         id: updated._id,
         userName: updated.userName,
         email: updated.email,
-        profileImage: updated.profileImage
+        profileImage: updated.profileImage,
       };
 
       res.status(200).json({
         status: "success",
         message: "User updated successfully.",
         payload: user,
-        accessToken: accessToken
+        accessToken,
       });
-
     } catch (error) {
-      res.status(500).json({ status: "error", message: error.message });
+      res.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
-  }
+  };
+
 
   static deleteUser = async (req, res) => {
     try {

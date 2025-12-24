@@ -1,3 +1,8 @@
+// 🔴 SOLO DESARROLLO – deshabilita validación SSL
+if (process.env.NODE_ENV !== "production") {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
 import dotenv from "dotenv";
 import __dirname from "./___dirname.js";
 import path from "path";

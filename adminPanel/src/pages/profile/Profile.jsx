@@ -1,7 +1,5 @@
 import "./Profile.css";
 import React, { useEffect, useState, useRef } from "react";
-
-// redux
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateUserStart,
@@ -9,13 +7,11 @@ import {
   updateUserFailure,
   setAccessToken,
 } from "../../redux/user/userSlice";
-
-// auth context
 import { useAuthContext } from "../../contexts/authContext";
-
-// api calls
 import { updateUserReq } from "../../apiCalls/userCalls";
 import { uploadProfileImgReq } from "../../apiCalls/uploadCalls";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 
 /* REGEX */
 const userNameRegex = /^[a-zA-Z][a-zA-Z0-9-_]{3,20}$/;
@@ -35,7 +31,8 @@ export default function Profile() {
     userName: user?.userName || "",
     email: user?.email || "",
     profileImage: user?.profileImage || "",
-    password: "",
+    currentPassword: "",
+    newPassword: "",
   });
 
   const [originalUser, setOriginalUser] = useState(updateUser);
@@ -43,10 +40,13 @@ export default function Profile() {
 
   const [validUserName, setValidUserName] = useState(true);
   const [validEmail, setValidEmail] = useState(true);
-  const [validPassword, setValidPassword] = useState(true);
+  const [validCurrentPassword, setValidCurrentPassword] = useState(true);
+  const [validNewPassword, setValidNewPassword] = useState(true);
 
   const [img, setImg] = useState(null);
   const [previewImg, setPreviewImg] = useState(null);
+
+  const [frontErrorMessage, setFrontErrorMessage] = useState("");
 
   /* ================= VALIDATIONS ================= */
   useEffect(() => {
@@ -58,12 +58,24 @@ export default function Profile() {
   }, [updateUser.email]);
 
   useEffect(() => {
-    if (updateUser.password) {
-      setValidPassword(passwordRegex.test(updateUser.password));
-    } else {
-      setValidPassword(true);
+    if (updateUser.currentPassword)
+      setValidCurrentPassword(passwordRegex.test(updateUser.currentPassword));
+    else setValidCurrentPassword(true);
+  }, [updateUser.currentPassword]);
+
+  useEffect(() => {
+    if (updateUser.newPassword)
+      setValidNewPassword(passwordRegex.test(updateUser.newPassword));
+    else setValidNewPassword(true);
+  }, [updateUser.newPassword]);
+
+  // Timer para mensajes temporales
+  useEffect(() => {
+    if (frontErrorMessage) {
+      const timer = setTimeout(() => setFrontErrorMessage(""), 2000);
+      return () => clearTimeout(timer);
     }
-  }, [updateUser.password]);
+  }, [frontErrorMessage]);
 
   useEffect(() => {
     if (!updateSuccess) return;
@@ -79,6 +91,7 @@ export default function Profile() {
     setEditEnabled(true);
     setOriginalUser(updateUser);
     setUpdateSuccess(false);
+    setFrontErrorMessage("");
   };
 
   const exitEditMode = async () => {
@@ -93,6 +106,7 @@ export default function Profile() {
         setUpdateUser(originalUser);
         setImg(null);
         setPreviewImg(null);
+        setFrontErrorMessage("");
       }
     }
     setEditEnabled(false);
@@ -108,7 +122,25 @@ export default function Profile() {
 
   /* ================= HANDLE UPDATE ================= */
   const handleUpdate = async () => {
-    if (!validUserName || !validEmail || !validPassword) return;
+    setFrontErrorMessage("");
+
+    if (!validUserName || !validEmail) {
+      setFrontErrorMessage("Username or Email are invalid.");
+      return;
+    }
+
+    if (updateUser.newPassword) {
+      if (!updateUser.currentPassword || !updateUser.newPassword) {
+        setFrontErrorMessage("Both current and new password are required.");
+        return;
+      }
+      if (!validCurrentPassword || !validNewPassword) {
+        setFrontErrorMessage(
+          "Password must be 8–16 chars, uppercase, lowercase, number and !@#$%"
+        );
+        return;
+      }
+    }
 
     try {
       dispatch(updateUserStart());
@@ -121,11 +153,20 @@ export default function Profile() {
       }
 
       const updatedData = {
-        ...updateUser,
+        userName: updateUser.userName,
+        email: updateUser.email,
         profileImage: profileImageUrl,
+        currentPassword: updateUser.currentPassword,
+        newPassword: updateUser.newPassword,
       };
 
       const res = await updateUserReq(updatedData);
+
+      if (!res.ok) {
+        setFrontErrorMessage(res.message || "Error updating profile.");
+        dispatch(updateUserFailure(res.message));
+        return;
+      }
 
       dispatch(updateUserSuccess(res.payload.user));
       dispatch(setAccessToken(res.payload.accessToken));
@@ -134,12 +175,24 @@ export default function Profile() {
       setEditEnabled(false);
       setImg(null);
       setPreviewImg(null);
+      setUpdateUser((prev) => ({
+        ...prev,
+        currentPassword: "",
+        newPassword: "",
+      }));
     } catch (err) {
+      setFrontErrorMessage(err.message || "Error updating profile.");
       dispatch(updateUserFailure(err.message));
     }
   };
 
   if (!user) return <p>Loading profile...</p>;
+
+  /* ================= ICON LOGIC ================= */
+  const renderIcon = (isValid, value) => {
+    if (!value) return null;
+    return isValid ? faCheck : faTimes;
+  };
 
   return (
     <div className="profile-wrapper">
@@ -219,9 +272,7 @@ export default function Profile() {
           <div className="form-group">
             <div className="label-row">
               <label>Email</label>
-              {!validEmail && (
-                <span className="error-inline">Invalid email</span>
-              )}
+              {!validEmail && <span className="error-inline">Invalid email</span>}
             </div>
             <input
               type="email"
@@ -233,28 +284,79 @@ export default function Profile() {
             />
           </div>
 
-          {/* PASSWORD */}
-          <div className="form-group">
-            <div className="label-row">
-              <label>Password</label>
-              {!validPassword && (
-                <span className="error-inline">Invalid password</span>
-              )}
+          {/* NEW PASSWORD */}
+          {editEnabled && (
+            <div className="form-group">
+              <div className="label-row">
+                <label>New Password</label>
+                <span
+                  className={`icon ${
+                    updateUser.newPassword
+                      ? validNewPassword
+                        ? "show valid"
+                        : "show invalid"
+                      : ""
+                  }`}
+                >
+                  {renderIcon(validNewPassword, updateUser.newPassword) && (
+                    <FontAwesomeIcon
+                      icon={renderIcon(validNewPassword, updateUser.newPassword)}
+                    />
+                  )}
+                </span>
+              </div>
+              <input
+                type="password"
+                value={updateUser.newPassword}
+                onChange={(e) =>
+                  setUpdateUser({ ...updateUser, newPassword: e.target.value })
+                }
+                placeholder="********"
+              />
             </div>
-            <input
-              type="password"
-              placeholder="********"
-              disabled={!editEnabled}
-              onChange={(e) =>
-                setUpdateUser({ ...updateUser, password: e.target.value })
-              }
-            />
-          </div>
+          )}
 
+          {/* CURRENT PASSWORD */}
+          {editEnabled && updateUser.newPassword && (
+            <div className="form-group">
+              <div className="label-row">
+                <label>Current Password</label>
+                <span
+                  className={`icon ${
+                    updateUser.currentPassword
+                      ? validCurrentPassword
+                        ? "show valid"
+                        : "show invalid"
+                      : ""
+                  }`}
+                >
+                  {renderIcon(validCurrentPassword, updateUser.currentPassword) && (
+                    <FontAwesomeIcon
+                      icon={renderIcon(
+                        validCurrentPassword,
+                        updateUser.currentPassword
+                      )}
+                    />
+                  )}
+                </span>
+              </div>
+              <input
+                type="password"
+                value={updateUser.currentPassword}
+                onChange={(e) =>
+                  setUpdateUser({ ...updateUser, currentPassword: e.target.value })
+                }
+                placeholder="********"
+              />
+            </div>
+          )}
+
+          {/* SUCCESS / ERROR */}
           <div className="success-slot">
             {updateSuccess && (
               <p className="success">Profile updated successfully</p>
             )}
+            {frontErrorMessage && <p className="error">{frontErrorMessage}</p>}
           </div>
         </form>
       </div>

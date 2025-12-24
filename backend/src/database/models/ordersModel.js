@@ -26,12 +26,12 @@ const orderSchema = new mongoose.Schema(
     customer: {
       name: {
         type: String,
-        required: true,
+        default: "Guest",
       },
       email: {
         type: String,
-        required: true,
         lowercase: true,
+        default: "",
       },
       phone: {
         type: String,

@@ -14,7 +14,6 @@ const authContext = createContext();
 
 export const AuthContextProvider = ({children})=>{
     const {error, loading} = useSelector((state)=> state.user)
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
 
@@ -26,7 +25,6 @@ export const AuthContextProvider = ({children})=>{
       if (res.ok) {
           dispatch(signInSuccess(res.payload.user));
           dispatch(setAccessToken(res.payload.accessToken))
-          navigate("/dashboard");
       }else {
           console.log(res.status, res.message);
           dispatch(signInFailure(res.message));
@@ -41,7 +39,6 @@ export const AuthContextProvider = ({children})=>{
       if(res.ok){
         dispatch(signInSuccess(res.payload.user));
         dispatch(setAccessToken(res.payload.accessToken))
-        navigate("/dashboard")
       }else {
           console.log(res.status, res.message);
           dispatch(signInFailure(res.message));
@@ -52,7 +49,6 @@ export const AuthContextProvider = ({children})=>{
     const logOut = async () => {
 
       dispatch(defaultState());
-      navigate("/");
       const res = await logOutReq();
       console.log("Logout response:", res.status, res.message);
     };

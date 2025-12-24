@@ -3,74 +3,114 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   user: null,
   error: null,
-  loading:false,
+
+  // 🔐 auth
+  loading: false,
   isAuthenticated: false,
-  accessToken: null
-}
+  accessToken: null,
+
+  // 👤 profile
+  profileLoading: false,
+};
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    defaultState: (state)=>{
-      state.user= null;
-      state.error= null;
-      state.loading=false;
-      state.isAuthenticated=false
-      state.accessToken=false
-    },
-    errorStart: (state)=>{
-      state.error = null;
-    },
-    signInStart: (state)=>{
-      state.loading = true
-    },
-    signInSuccess: (state, action)=>{
-      state.user = action.payload;
-      state.loading = false;
-      state.error = null;
-      state.isAuthenticated= true;
-    },
-    signInFailure: (state, action)=>{
+    /* ================= RESET ================= */
+
+    defaultState: (state) => {
       state.user = null;
+      state.error = null;
       state.loading = false;
-      state.error = action.payload;
-      state.isAuthenticated= false;
+      state.profileLoading = false;
+      state.isAuthenticated = false;
+      state.accessToken = null;
     },
-    updateUserStart:(state)=>{
+
+    errorStart: (state) => {
+      state.error = null;
+    },
+
+    /* ================= AUTH ================= */
+
+    signInStart: (state) => {
       state.loading = true;
     },
-    updateUserSuccess:(state, action)=>{
+
+    signInSuccess: (state, action) => {
       state.user = action.payload;
       state.loading = false;
       state.error = null;
       state.isAuthenticated = true;
     },
-    updateUserFailure: (state,action)=>{
-      state.error = action.payload;
-      state.loading = false;
-    },
-    deleteUserStart:(state)=>{
-      state.loading = true;
-    },
-    deleteUserSuccess:(state, action)=>{
+
+    signInFailure: (state, action) => {
       state.user = null;
       state.loading = false;
-      state.error = null;
+      state.error = action.payload;
       state.isAuthenticated = false;
     },
-    deleteUserFailure: (state,action)=>{
+
+    /* ================= UPDATE USER ================= */
+
+    updateUserStart: (state) => {
+      state.profileLoading = true; // ✅ SOLO profile
+    },
+
+    updateUserSuccess: (state, action) => {
+      state.user = action.payload;
+      state.profileLoading = false;
+      state.error = null;
+      // ❌ NO tocar isAuthenticated
+    },
+
+    updateUserFailure: (state, action) => {
+      state.error = action.payload;
+      state.profileLoading = false;
+    },
+
+    /* ================= DELETE USER ================= */
+
+    deleteUserStart: (state) => {
+      state.loading = true;
+    },
+
+    deleteUserSuccess: (state) => {
+      state.user = null;
+      state.loading = false;
+      state.profileLoading = false;
+      state.error = null;
+      state.isAuthenticated = false;
+      state.accessToken = null;
+    },
+
+    deleteUserFailure: (state, action) => {
       state.error = action.payload;
       state.loading = false;
     },
-    setAccessToken:(state,action)=>{
-      state.accessToken = action.payload
+
+    /* ================= TOKEN ================= */
+
+    setAccessToken: (state, action) => {
+      state.accessToken = action.payload;
     },
-  }
+  },
 });
 
-export const {signInFailure, signInSuccess, signInStart, 
-  errorStart,defaultState, setAccessToken, updateUserStart,
-  updateUserSuccess,updateUserFailure, deleteUserStart,
-   deleteUserSuccess, deleteUserFailure} =userSlice.actions;
+export const {
+  signInFailure,
+  signInSuccess,
+  signInStart,
+  errorStart,
+  defaultState,
+  setAccessToken,
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
+} = userSlice.actions;
+
 export default userSlice.reducer;

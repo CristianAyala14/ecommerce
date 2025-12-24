@@ -2,21 +2,21 @@ import "./LogIn.css";
 import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import {useAuthContext} from "../../contexts/authContext"
-import { useNavigate } from "react-router-dom";
-
+import { useAuthContext } from "../../contexts/authContext";
+import { useNavigate, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 /* REGEX */
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,16}$/;
 
-
 export default function LogIn() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state) => state.user);
 
   const emailRef = useRef(null);
-  const {signUp, signIn, error, loading} = useAuthContext()
+  const { signUp, signIn, error, loading } = useAuthContext();
 
   const [isRegister, setIsRegister] = useState(false);
 
@@ -46,25 +46,20 @@ export default function LogIn() {
     setFrontErrorMessage("");
   }, [email, password, isRegister]);
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validEmail || !validPassword) {
       setFrontErrorMessage("Invalid entry.");
       return;
     }
 
-    const formData ={
-      email, password
-    }
-    console.log(formData)
+    const formData = { email, password };
 
-    let res;
-    if(isRegister){
-      res = await signUp(formData);
-    }else{
-      res = await signIn(formData)
+    if (isRegister) {
+      await signUp(formData);
+    } else {
+      await signIn(formData);
     }
-    
   };
 
   /* 🔑 ICON LOGIC */
@@ -72,6 +67,11 @@ export default function LogIn() {
     if (!value) return null;
     return isValid ? faCheck : faTimes;
   };
+
+  // ✅ REDIRECCIÓN DESPUÉS DE TODOS LOS HOOKS
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="login-container">
@@ -96,9 +96,7 @@ export default function LogIn() {
                   }`}
                 >
                   {renderIcon(validEmail, email) && (
-                    <FontAwesomeIcon
-                      icon={renderIcon(validEmail, email)}
-                    />
+                    <FontAwesomeIcon icon={renderIcon(validEmail, email)} />
                   )}
                 </span>
               </label>
@@ -112,11 +110,7 @@ export default function LogIn() {
                 onBlur={() => setEmailFocus(false)}
               />
 
-              <p
-                className={`hint ${
-                  emailFocus && !validEmail ? "show" : ""
-                }`}
-              >
+              <p className={`hint ${emailFocus && !validEmail ? "show" : ""}`}>
                 <FontAwesomeIcon icon={faInfoCircle} />
                 Enter a valid email address.
               </p>
@@ -136,9 +130,7 @@ export default function LogIn() {
                   }`}
                 >
                   {renderIcon(validPassword, password) && (
-                    <FontAwesomeIcon
-                      icon={renderIcon(validPassword, password)}
-                    />
+                    <FontAwesomeIcon icon={renderIcon(validPassword, password)} />
                   )}
                 </span>
               </label>
@@ -151,11 +143,7 @@ export default function LogIn() {
                 onBlur={() => setPasswordFocus(false)}
               />
 
-              <p
-                className={`hint ${
-                  passwordFocus && !validPassword ? "show" : ""
-                }`}
-              >
+              <p className={`hint ${passwordFocus && !validPassword ? "show" : ""}`}>
                 <FontAwesomeIcon icon={faInfoCircle} />
                 8–16 chars, uppercase, lowercase, number and !@#$%
               </p>
@@ -167,7 +155,6 @@ export default function LogIn() {
             <button
               disabled={!validEmail || !validPassword}
               className={!validEmail || !validPassword ? "disabled" : ""}
-              onClick={handleSubmit}
             >
               {loading
                 ? "Loading..."
@@ -178,15 +165,15 @@ export default function LogIn() {
           </div>
 
           {error && <p className="error">{error}</p>}
-          {frontErrorMessage && (
-            <p className="error">{frontErrorMessage}</p>
-          )}
+          {frontErrorMessage && <p className="error">{frontErrorMessage}</p>}
         </form>
+
         <p className="toggle-text">
           <span onClick={() => navigate("/forgot-password")}>
             ¿Olvidaste tu contraseña?
           </span>
         </p>
+
         <p className="toggle-text">
           {isRegister ? "Ya estas registrado?" : "No tenes cuenta?"}
           <span onClick={() => setIsRegister(!isRegister)}>
