@@ -30,9 +30,23 @@ export default function LogIn() {
 
   const [frontErrorMessage, setFrontErrorMessage] = useState("");
 
+
   useEffect(() => {
     emailRef.current?.focus();
   }, [isRegister]);
+
+
+   /* 🔥 RESET TOTAL DEL FORM AL CAMBIAR LOGIN / REGISTER */
+  useEffect(() => {
+    setEmail("");
+    setPassword("");
+    setValidEmail(false);
+    setValidPassword(false);
+    setEmailFocus(false);
+    setPasswordFocus(false);
+    setFrontErrorMessage("");
+  }, [isRegister]);
+
 
   useEffect(() => {
     setValidEmail(emailRegex.test(email));

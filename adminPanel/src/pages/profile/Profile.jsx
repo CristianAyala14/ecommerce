@@ -125,18 +125,18 @@ export default function Profile() {
     setFrontErrorMessage("");
 
     if (!validUserName || !validEmail) {
-      setFrontErrorMessage("Username or Email are invalid.");
+      setFrontErrorMessage("Nombre de usuario o mail invalidos.");
       return;
     }
 
     if (updateUser.newPassword) {
       if (!updateUser.currentPassword || !updateUser.newPassword) {
-        setFrontErrorMessage("Both current and new password are required.");
+        setFrontErrorMessage("Necesitas ingresar la contraseña actual y la nueva.");
         return;
       }
       if (!validCurrentPassword || !validNewPassword) {
         setFrontErrorMessage(
-          "Password must be 8–16 chars, uppercase, lowercase, number and !@#$%"
+          "La contraseña actual o la nueva no cumplen con los requisitos."
         );
         return;
       }
@@ -163,7 +163,7 @@ export default function Profile() {
       const res = await updateUserReq(updatedData);
 
       if (!res.ok) {
-        setFrontErrorMessage(res.message || "Error updating profile.");
+        setFrontErrorMessage(res.message || "Error actualizando el perfil.");
         dispatch(updateUserFailure(res.message));
         return;
       }
@@ -181,7 +181,7 @@ export default function Profile() {
         newPassword: "",
       }));
     } catch (err) {
-      setFrontErrorMessage(err.message || "Error updating profile.");
+      setFrontErrorMessage(err.message || "Error actualizando el perfil.");
       dispatch(updateUserFailure(err.message));
     }
   };
@@ -253,9 +253,9 @@ export default function Profile() {
           {/* USERNAME */}
           <div className="form-group">
             <div className="label-row">
-              <label>Username</label>
+              <label>Nombre de usuario: </label>
               {!validUserName && (
-                <span className="error-inline">Invalid username</span>
+                <span className="error-inline">Nombre de usuario invalido.</span>
               )}
             </div>
             <input
@@ -271,7 +271,7 @@ export default function Profile() {
           {/* EMAIL */}
           <div className="form-group">
             <div className="label-row">
-              <label>Email</label>
+              <label>E-mail:</label>
               {!validEmail && <span className="error-inline">Invalid email</span>}
             </div>
             <input
@@ -288,7 +288,7 @@ export default function Profile() {
           {editEnabled && (
             <div className="form-group">
               <div className="label-row">
-                <label>New Password</label>
+                <label>Nueva contraseña: </label>
                 <span
                   className={`icon ${
                     updateUser.newPassword
@@ -320,7 +320,7 @@ export default function Profile() {
           {editEnabled && updateUser.newPassword && (
             <div className="form-group">
               <div className="label-row">
-                <label>Current Password</label>
+                <label>Contraseña actual: </label>
                 <span
                   className={`icon ${
                     updateUser.currentPassword
@@ -354,7 +354,7 @@ export default function Profile() {
           {/* SUCCESS / ERROR */}
           <div className="success-slot">
             {updateSuccess && (
-              <p className="success">Profile updated successfully</p>
+              <p className="success">Perfil actualizado correctamente.</p>
             )}
             {frontErrorMessage && <p className="error">{frontErrorMessage}</p>}
           </div>

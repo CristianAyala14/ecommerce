@@ -16,6 +16,13 @@ const productSchema = new mongoose.Schema({
     ref: "categories",
     required: true
   },
+
+  quantity: {
+    type: Number,
+    required: true,
+    min: [1, "La cantidad debe ser al menos 1"],
+    default: 1
+  },
   
 
   images: {

@@ -50,7 +50,6 @@ export const AuthContextProvider = ({children})=>{
 
       dispatch(defaultState());
       const res = await logOutReq();
-      console.log("Logout response:", res.status, res.message);
     };
 
 

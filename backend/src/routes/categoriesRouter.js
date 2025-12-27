@@ -3,7 +3,7 @@ import { categoriesController } from "../controllers/categoriesController.js";
 const router = Router();
 
 // CRUD completo de categorías
-router.post("/", categoriesController.createCategory);
+router.post("/create", categoriesController.createCategory);
 router.get("/", categoriesController.getAllCategories);
 router.get("/:id", categoriesController.getCategoryById);
 router.put("/:id", categoriesController.updateCategory);

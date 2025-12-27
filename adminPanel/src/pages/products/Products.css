@@ -1,0 +1,22 @@
+.products-page {
+  height: 100vh;              /* 🔴 ocupa toda la pantalla */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;           /* 🔴 mata el scroll de página */
+  padding: 0.5rem;
+  gap: 0.5rem;
+  background: #f3f4f6;
+}
+
+/* HEADER */
+.page-header {
+  flex-shrink: 0;
+  height: 70px;               /* tu altura fija */
+  display: flex;
+  align-items: center;
+}
+
+/* TOOLBAR */
+.products-toolbar {
+  flex-shrink: 0;
+}

@@ -69,7 +69,7 @@ class userController {
         if (!isValidPassword) {
           return res.status(401).json({
             status: "error",
-            message: "Current password is incorrect.",
+            message: "La contraseña actual es incorrecta.",
           });
         }
 

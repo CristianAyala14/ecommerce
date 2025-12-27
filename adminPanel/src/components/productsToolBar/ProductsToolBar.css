@@ -1,0 +1,192 @@
+.products-toolbar {
+  border: 1px solid #dcdcdc;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  background-color: #ffffff;
+  border-radius: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+}
+
+/* ========================= */
+/* INPUT & SELECT */
+.products-toolbar input,
+.products-toolbar select {
+  cursor: pointer;
+  height: 2.2rem;
+  padding: 0 0.75rem;
+  font-size: 0.75rem;
+  border-radius: 0.6rem;
+  border: 1px solid #dcdcdc;
+  background-color: #fafafa;
+  color: #333;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+/* Remove native arrow */
+.products-toolbar select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 2rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M1.5 5.5l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 0.65rem;
+}
+
+/* Placeholder */
+.products-toolbar input::placeholder {
+  color: var(--color3);
+}
+
+/* Focus */
+.products-toolbar input:focus,
+.products-toolbar select:focus {
+  border-color: var(--color3);
+  box-shadow: 0 0 0 2px rgba(184, 184, 187, 0.2);
+  background-color: #ffffff;
+}
+
+/* Disabled select */
+.products-toolbar select:disabled {
+  background-color: #f1f1f1;
+  color: #9e9e9e;
+  cursor: not-allowed;
+  border-color: #e0e0e0;
+  background-image: none;
+}
+
+/* ========================= */
+/* 🔥 OPTION SIZE FIX */
+.products-toolbar option {
+  font-size: 0.7rem;
+  padding: 0.4rem;
+}
+
+/* ========================= */
+/* FILTER CHECKBOXES */
+.toolbar-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.filter-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  color: #444;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.filter-checkbox span {
+  font-size: 0.75rem;
+}
+
+/* Hide native checkbox */
+.filter-checkbox input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 1rem;
+  border: 1px solid #cfcfcf;
+  background-color: #fafafa;
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* Check icon */
+.filter-checkbox input::before {
+  content: "✔";
+  font-size: 0.55rem;
+  color: #ffffff;
+  transform: scale(0);
+  transition: transform 0.15s ease;
+}
+
+/* Checked */
+.filter-checkbox input:checked {
+  background-color: var(--color3);
+  border-color: var(--color3);
+}
+
+.filter-checkbox input:checked::before {
+  transform: scale(1);
+}
+
+/* Hover */
+.filter-checkbox:hover input {
+  border-color: var(--color3);
+}
+
+/* ========================= */
+/* ADD PRODUCT BUTTON */
+.add-product {
+  margin-left: auto;
+  height: 2.2rem;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.7rem;
+  border: none;
+  background-color: var(--color3);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.add-product:hover {
+  background-color: #69cd6b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25);
+}
+
+.add-product:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ========================= */
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .products-toolbar {
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .products-toolbar input,
+  .products-toolbar select {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .toolbar-filters {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 0.6rem;
+  }
+
+  .filter-checkbox {
+    flex: 0 0 auto;
+  }
+
+  .add-product {
+    width: 100%;
+    margin-left: 0;
+  }
+}

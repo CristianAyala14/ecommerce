@@ -92,12 +92,17 @@ class productsService {
         limit = 10,
         sort = "createdAt",
         order = "desc",
-        category
+        category,
+        searchTerm,
+        new_insert,
+        offer
       } = query;
 
       const filter = {};
 
-      // category llega como nombre
+      /* =========================
+        CATEGORY (por nombre)
+      ========================== */
       if (category && category.toLowerCase() !== "all") {
         const catDoc = await categoriesModel
           .findOne({ name: category })
@@ -108,6 +113,33 @@ class productsService {
         }
       }
 
+      /* =========================
+        SEARCH (title / description)
+      ========================== */
+      if (searchTerm && searchTerm.trim() !== "") {
+        filter.$or = [
+          { title: { $regex: searchTerm, $options: "i" } },
+          { description: { $regex: searchTerm, $options: "i" } }
+        ];
+      }
+
+      /* =========================
+        NEW INSERT FILTER
+      ========================== */
+      if (new_insert === "true") {
+        filter.new_insert = true;
+      }
+
+      /* =========================
+        OFFER FILTER
+      ========================== */
+      if (offer === "true") {
+        filter.offer = true;
+      }
+
+      /* =========================
+        SORT
+      ========================== */
       const sortOrder = order === "asc" ? 1 : -1;
 
       const options = {
@@ -123,6 +155,8 @@ class productsService {
       throw new Error(error.message || "Error fetching products list");
     }
   };
+
+
 
   // ============================
   // SPECIAL LISTS
