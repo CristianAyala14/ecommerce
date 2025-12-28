@@ -7,6 +7,9 @@ import { validateAccessToken } from "../middlewares/validateAccessToken.js";
 const router = express.Router();
 
 // "file" es el nombre del campo que envía el frontend
-router.post("/", validateAccessToken, upload.single("file"), imgController.upload);
+router.post("/profile", validateAccessToken, upload.single("file"), imgController.uploadProfileImage);
+router.post("/product", validateAccessToken, upload.single("file"), imgController.uploadProductImage);
+
+
 
 export { router as imgRouter };

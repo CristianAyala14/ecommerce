@@ -117,6 +117,10 @@ export default function Profile() {
     const formData = new FormData();
     formData.append("file", img);
     const res = await uploadProfileImgReq(formData);
+    if (!res.ok) {
+      setFrontErrorMessage(res.message || "Error subiendo la imagen.");
+      return null;
+    }
     return res.url;
   };
 

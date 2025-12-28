@@ -108,8 +108,8 @@
 }
 
 /* 👇 LABELS APAGADOS CUANDO NO EDITA */
-.profile-container:not(.edit-mode) .label-row label {
-  opacity: 0.35;
+.profile-container.edit-mode .label-row label {
+  opacity: 1; /* total visibilidad en edición */
 }
 
 .error-inline {
@@ -159,6 +159,8 @@
   opacity: 0;
   transition: opacity 0.2s ease;
 }
+
+
 
 .label-row .icon.show {
   visibility: visible;

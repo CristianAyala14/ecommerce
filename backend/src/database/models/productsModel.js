@@ -34,7 +34,7 @@ const productSchema = new mongoose.Schema({
           return (
             Array.isArray(arr) &&
             arr.length >= 1 &&
-            arr.length <= 3 &&
+            arr.length <= 4 &&
             arr.every((url) =>
               typeof url === "string" &&
               url.startsWith("https://")

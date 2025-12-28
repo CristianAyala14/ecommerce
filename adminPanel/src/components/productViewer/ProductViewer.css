@@ -115,6 +115,13 @@
   font-size: 1rem;
 }
 
+
+.product-actions .edit {
+  position: relative;
+  bottom: 0.2rem;
+}
+
+
 /* PAGINATION */
 .pagination {
   display: flex;
@@ -167,4 +174,14 @@
   padding: 2rem;
   color: #666;
 
+}
+
+
+.loading, .empty{
+  font-size: 0.7rem;
+}
+
+.product-link{
+  text-decoration: none;
+  color: inherit;
 }

@@ -1,7 +1,7 @@
 import "./ProductViewer.css";
 import { useEffect, useState } from "react";
-import { getAllProductsReq } from "../../apiCalls/productsCalls";
-
+import { getAllProductsReq, deleteProductReq } from "../../apiCalls/productsCalls";
+import { Link } from "react-router-dom";
 export default function ProductViewer({ filters }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -57,6 +57,25 @@ export default function ProductViewer({ filters }) {
     fetchProducts();
   }, [filters, page]);
 
+  const deleteProduct = async (id) => {
+    const confirmSave = window.confirm(
+        "Estas por eliminar un producto. ¿Querés continuar?"
+      );
+
+    if (confirmSave) {
+        const res = await deleteProductReq(id);
+        if (res.ok) {
+          alert("Producto eliminado correctamente!"); 
+          // Refrescar la lista de productos
+          setProducts((prevProducts) => prevProducts.filter((product) => product._id !== id));    
+        }
+      } else {
+        return;
+      }
+  }
+
+
+
   if (loading) {
     return <p className="loading">Cargando productos...</p>;
   }
@@ -81,6 +100,7 @@ export default function ProductViewer({ filters }) {
         {products.map((product) => (
           <div key={product._id} className="product-row">
             {/* PRODUCT */}
+            
             <div className="product-info">
               <img
                 src={product.images?.[0]}
@@ -119,8 +139,13 @@ export default function ProductViewer({ filters }) {
 
             {/* ACTIONS */}
             <div className="product-actions">
-              <button className="edit">✏️</button>
-              <button className="delete">🗑️</button>
+              <Link
+                to={`/products/${product._id}`}
+                className="product-link"
+              >
+                <button className="edit">✏️</button>
+              </Link>
+              <button className="delete" onClick={() => deleteProduct(product._id)}>🗑️</button>
             </div>
           </div>
         ))}

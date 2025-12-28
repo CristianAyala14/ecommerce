@@ -1,4 +1,4 @@
-import { axiosCall } from "./axiosConfig";
+import { axiosCall , axiosWithAuth } from "./axiosConfig";
 
 /* =========================
    PRODUCTS ON OFFER
@@ -98,5 +98,24 @@ export async function getNewProductsReq() {
       status: error.status,
       message: error.message,
     };
+  }
+}
+
+//con autorizacion
+export async function updateProductReq(id, updatedProduct) {
+  try {
+    const response = await axiosWithAuth.put(`/products/${id}`, updatedProduct);
+    return { ok: true, status: response.status, payload: response.data.payload };
+  } catch (error) {
+    return { ok: false, status: error.response?.status || 500, message: error.response?.data?.message || error.message };
+  }
+}
+
+export async function deleteProductReq(id) {
+  try {
+    const response = await axiosWithAuth.delete(`/products/${id}`);
+    return { ok: true, status: response.status, payload: response.data.payload };
+  } catch (error) {
+    return { ok: false, status: error.response?.status || 500, message: error.response?.data?.message || error.message };
   }
 }

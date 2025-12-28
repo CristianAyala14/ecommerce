@@ -10,7 +10,7 @@ import Header from "./components/header/Header"
 import LogIn from "./pages/logIn/LogIn"
 import Dashboard from "./pages/dashboard/Dashboard"
 import Products from "./pages/products/Products"
-import ProductDetail from "./pages/productDetail/ProductDetail"
+import ProductEditView from "./pages/productEditView/ProductEditView"
 import Categories from "./pages/categories/Categories"
 import CategoryDetail from "./pages/categoryDetail/CategoryDetail"
 import Orders from "./pages/orders/Orders"
@@ -47,7 +47,7 @@ function App() {
 
                 {/* PRODUCTS */}
                 <Route path="/products" element={<Products />} />
-                <Route path="/products/:id" element={<ProductDetail />} />
+                <Route path="/products/:id" element={<ProductEditView />} />
 
                 {/* CATEGORIES */}
                 <Route path="/categories" element={<Categories />} />
