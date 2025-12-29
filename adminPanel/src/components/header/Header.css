@@ -1,5 +1,5 @@
 .header-container {
-  width: 8%;
+  width: 10%;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -61,6 +61,8 @@
 /* ================= LOGOUT ================= */
 .logOut-button {
   border-radius: 3rem;
+  height: auto;
+  width: auto;
   border: 0;
   padding-inline: 0.5rem;
   padding-bottom: 0.3rem;

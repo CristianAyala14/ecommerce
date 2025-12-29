@@ -11,9 +11,15 @@
 /* HEADER */
 .page-header {
   flex-shrink: 0;
-  height: 70px;               /* tu altura fija */
+  height: 70px;  
   display: flex;
   align-items: center;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--color3);
 }
 
 /* TOOLBAR */

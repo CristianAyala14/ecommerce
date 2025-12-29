@@ -47,12 +47,12 @@ export default function Ofertas() {
 
   return (
     <section className="ofertas-container">
-      <h3 className="ofertas-title">Mejores precios</h3>
+      <h3 className="ofertas-title">Nuestros mejores productos</h3>
       <p className="ofertas-text">
         Hecha un vistazo a los productos mas valorados por nuestros clientes.
       </p>
 
-      {/* PAGINACIÓN (solo si hay productos) */}
+      {/* PAGINACIÓN */}
       {!loading && hasProducts && (
         <div className="ofertas-pagination">
           <button
@@ -84,7 +84,7 @@ export default function Ofertas() {
             <Item
               key={item._id}
               id={item._id}
-              image={item.images?.[0]}
+              image={item.images?.[0]?.url}
               name={item.title}
               regularPrice={item.regularPrice}
               old_price={item.old_price}

@@ -39,13 +39,11 @@ export default function ProductList({ category }) {
     const fetchCategories = async () => {
       const res = await getAllCategoriesReq();
 
-      if(res.ok) {
+      if (res.ok) {
         setCategorias(res.payload);
-      }else{
+      } else {
         console.error(res.status, res.message);
-        return;
       }
-
     };
 
     fetchCategories();
@@ -213,7 +211,7 @@ export default function ProductList({ category }) {
             <Item
               key={item._id}
               id={item._id}
-              image={item.images?.[0]}
+              image={item.images?.[0]?.url}
               name={item.title}
               regularPrice={item.regularPrice}
               old_price={item.old_price}

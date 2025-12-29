@@ -1,6 +1,6 @@
-import React from 'react'
-import "./Item.css"
-import { Link } from 'react-router-dom'
+import React from "react";
+import "./Item.css";
+import { Link } from "react-router-dom";
 
 export default function Item({
   id,
@@ -12,10 +12,13 @@ export default function Item({
 }) {
   return (
     <div className="item-card">
-
       <div className="item-image-wrapper">
         <Link to={`/products/${id}`}>
-          <img className="item-image" src={image} alt={name} />
+          <img
+            className="item-image"
+            src={image}
+            alt={name}
+          />
         </Link>
       </div>
 
@@ -23,15 +26,17 @@ export default function Item({
         <h4 className="item-title">{name}</h4>
 
         <div className="item-prices">
-          <div className="item-new-price">${regularPrice}</div>
-
-          {/* 👇 solo muestra el precio viejo si hay oferta */}
-          <div className="item-old-price">
-            {offer ? `$${old_price}` : ""}
+          <div className="item-new-price">
+            ${regularPrice}
           </div>
+
+          {offer && (
+            <div className="item-old-price">
+              ${old_price}
+            </div>
+          )}
         </div>
       </div>
-
     </div>
-  )
+  );
 }

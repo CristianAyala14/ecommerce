@@ -98,11 +98,6 @@
 
 
 
-
-
-
-
-
 .productList-products-container {
   margin-top: 2rem;   /* ✅ seguro */
   display: grid;
@@ -147,5 +142,6 @@
 
 .no-products, .loading-productList{
   color: var(--color1);
-  font-size: 0.8rem;
+  font-size: 0.6rem;
+  
 }

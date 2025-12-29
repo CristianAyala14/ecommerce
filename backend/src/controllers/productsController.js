@@ -1,4 +1,5 @@
 import { productsDao } from "../database/dao_exports.js";
+import cloudinary from "../config/cloudinary.js";
 
 class productsController {
   static getAllProducts = async (req, res) => {
@@ -81,23 +82,48 @@ class productsController {
 
   static deleteProduct = async (req, res) => {
     try {
-      if (!req.params.id) {
+      const { id } = req.params;
+
+      if (!id) {
         return res.status(400).json({
           status: "error",
           message: "Product ID is required",
         });
       }
 
-      const deletedProduct = await productsDao.deleteProduct(req.params.id);
+      // 1️⃣ Buscar producto
+      const product = await productsDao.getProductById(id);
+
+      if (!product) {
+        return res.status(404).json({
+          status: "error",
+          message: "Product not found",
+        });
+      }
+
+      // 2️⃣ Eliminar imágenes en Cloudinary
+      if (Array.isArray(product.images)) {
+        await Promise.all(
+          product.images.map((img) => {
+            if (img.public_id) {
+              return cloudinary.uploader.destroy(img.public_id);
+            }
+          })
+        );
+      }
+
+      // 3️⃣ Eliminar producto de la DB
+      const deletedProduct = await productsDao.deleteProduct(id);
+
       res.status(200).json({
         status: "success",
-        message: "Products deleted correctly.",
-        payload: deletedProduct
+        message: "Product and images deleted correctly.",
+        payload: deletedProduct,
       });
     } catch (error) {
       res.status(500).json({
         status: "error",
-        message: error.message
+        message: error.message,
       });
     }
   };

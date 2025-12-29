@@ -7,7 +7,8 @@ export async function uploadProfileImgReq(formData) {
     return {
       ok: true,
       status: response.status,
-      url: response.data.url
+      url: response.data.url,
+      public_id: response.data.public_id,
     };
   } catch (error) {
     return {
@@ -26,6 +27,8 @@ export async function uploadProductImgReq(formData) {
       ok: true,
       status: response.status,
       url: response.data.url,
+      public_id: response.data.public_id,
+
     };
   } catch (error) {
     return {

@@ -38,8 +38,8 @@ padding: 1rem;
 .product-gallery .main-image {
   width: 90%;
   height: 15rem;
-  object-fit: cover;
-object-position: center;
+  object-fit: contain;
+  object-position: center;
   border-radius: 8px;
 }
 

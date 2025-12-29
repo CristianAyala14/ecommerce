@@ -19,6 +19,8 @@ import Profile from "./pages/profile/Profile"
 import "./App.css"
 import ForgotPassword from "./pages/forgotPassword/ForgotPassword";
 import ResetPassword from "./pages/resetPassword/ResetPassword";
+import ProductCreateView from "./components/productCreateView/ProductCreateView";
+
 
 function App() {
 
@@ -48,6 +50,8 @@ function App() {
                 {/* PRODUCTS */}
                 <Route path="/products" element={<Products />} />
                 <Route path="/products/:id" element={<ProductEditView />} />
+                <Route path="/products/create" element={<ProductCreateView />} />
+
 
                 {/* CATEGORIES */}
                 <Route path="/categories" element={<Categories />} />

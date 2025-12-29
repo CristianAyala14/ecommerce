@@ -52,6 +52,27 @@ class ordersService {
       throw new Error(error.message || "Error saving order");
     }
   }
+
+  async deleteOrder(orderId) {
+    try {
+      if (!mongoose.Types.ObjectId.isValid(orderId)) {
+        throw new Error("Invalid order ID");
+      }
+
+      const deletedOrder = await ordersModel.findByIdAndDelete(orderId);
+
+      if (!deletedOrder) {
+        throw new Error("Order not found");
+      }
+
+      return deletedOrder;
+    } catch (error) {
+      throw new Error(error.message || "Error deleting order");
+    }
+  }
+
+
+
 }
 
 export { ordersService };

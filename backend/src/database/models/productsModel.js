@@ -23,37 +23,37 @@ const productSchema = new mongoose.Schema({
     min: [1, "La cantidad debe ser al menos 1"],
     default: 1
   },
-  
 
+  /* ===== IMAGES (MODIFICADO, SIMPLE) ===== */
   images: {
-    type: [String],
-    required: true,
-    validate: [
+    type: [
       {
-        validator: function (arr) {
-          return (
-            Array.isArray(arr) &&
-            arr.length >= 1 &&
-            arr.length <= 4 &&
-            arr.every((url) =>
-              typeof url === "string" &&
-              url.startsWith("https://")
-            )
-          );
+        url: {
+          type: String,
+          required: true
         },
-        message:
-          "Las imágenes deben ser URLs HTTPS válidas (Firebase) y entre 1 y 4"
+        public_id: {
+          type: String,
+          required: true
+        }
       }
-    ]
-  },
-
-  banner: {
-    type: String,
+    ],
     required: true,
     validate: {
-      validator: (url) =>
-        typeof url === "string" && url.startsWith("https://"),
-      message: "El banner debe ser una URL HTTPS válida (Firebase)"
+      validator: function (arr) {
+        return (
+          Array.isArray(arr) &&
+          arr.length >= 1 &&
+          arr.length <= 4 &&
+          arr.every(
+            (img) =>
+              typeof img.url === "string" &&
+              img.url.startsWith("https://") &&
+              typeof img.public_id === "string"
+          )
+        );
+      },
+      message: "Debe haber entre 1 y 4 imágenes válidas"
     }
   },
 
@@ -72,11 +72,13 @@ const productSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+
   description: {
-  type: String,
-  required: true,
-  trim: true
-},
+    type: String,
+    required: true,
+    trim: true
+  },
+
   offer: {
     type: Boolean,
     default: false
@@ -85,8 +87,7 @@ const productSchema = new mongoose.Schema({
   new_insert: {
     type: Boolean,
     default: false
-  },
-
+  }
 });
 
 productSchema.plugin(mongoosePaginate);

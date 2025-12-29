@@ -1,7 +1,11 @@
 import "./ProductViewer.css";
 import { useEffect, useState } from "react";
-import { getAllProductsReq, deleteProductReq } from "../../apiCalls/productsCalls";
+import {
+  getAllProductsReq,
+  deleteProductReq
+} from "../../apiCalls/productsCalls";
 import { Link } from "react-router-dom";
+
 export default function ProductViewer({ filters }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -59,22 +63,20 @@ export default function ProductViewer({ filters }) {
 
   const deleteProduct = async (id) => {
     const confirmSave = window.confirm(
-        "Estas por eliminar un producto. ¿Querés continuar?"
+      "Estas por eliminar un producto. ¿Querés continuar?"
+    );
+
+    if (!confirmSave) return;
+
+    const res = await deleteProductReq(id);
+
+    if (res.ok) {
+      alert("Producto eliminado correctamente!");
+      setProducts((prev) =>
+        prev.filter((product) => product._id !== id)
       );
-
-    if (confirmSave) {
-        const res = await deleteProductReq(id);
-        if (res.ok) {
-          alert("Producto eliminado correctamente!"); 
-          // Refrescar la lista de productos
-          setProducts((prevProducts) => prevProducts.filter((product) => product._id !== id));    
-        }
-      } else {
-        return;
-      }
-  }
-
-
+    }
+  };
 
   if (loading) {
     return <p className="loading">Cargando productos...</p>;
@@ -100,10 +102,9 @@ export default function ProductViewer({ filters }) {
         {products.map((product) => (
           <div key={product._id} className="product-row">
             {/* PRODUCT */}
-            
             <div className="product-info">
               <img
-                src={product.images?.[0]}
+                src={product.images?.[0]?.url}
                 alt={product.title}
                 className="product-image"
               />
@@ -145,7 +146,13 @@ export default function ProductViewer({ filters }) {
               >
                 <button className="edit">✏️</button>
               </Link>
-              <button className="delete" onClick={() => deleteProduct(product._id)}>🗑️</button>
+
+              <button
+                className="delete"
+                onClick={() => deleteProduct(product._id)}
+              >
+                🗑️
+              </button>
             </div>
           </div>
         ))}
@@ -153,27 +160,28 @@ export default function ProductViewer({ filters }) {
 
       {/* PAGINATION */}
       <div className="pagination">
-      <button
-        className="page-btn"
-        onClick={() => setPage((p) => Math.max(p - 1, 1))}
-        disabled={page === 1}
-      >
-        ←
-      </button>
+        <button
+          className="page-btn"
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          disabled={page === 1}
+        >
+          ←
+        </button>
 
-      <span className="page-info">
-        Página <strong>{page}</strong> de {totalPages}
-      </span>
+        <span className="page-info">
+          Página <strong>{page}</strong> de {totalPages}
+        </span>
 
-      <button
-        className="page-btn"
-        onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-        disabled={page === totalPages}
-      >
-        →
-      </button>
-    </div>
-
+        <button
+          className="page-btn"
+          onClick={() =>
+            setPage((p) => Math.min(p + 1, totalPages))
+          }
+          disabled={page === totalPages}
+        >
+          →
+        </button>
+      </div>
     </div>
   );
 }

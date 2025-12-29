@@ -23,7 +23,7 @@ export default function Product() {
 
       if (result.ok) {
         setProduct(result.payload);
-        setSelectedImage(result.payload.images?.[0] || "");
+        setSelectedImage(result.payload.images?.[0]?.url || "");
       } else {
         console.log(result.status, result.message);
       }
@@ -69,7 +69,9 @@ export default function Product() {
     }
   };
 
-  if (!product) return <p className="loading-product-productView">Cargando...</p>;
+  if (!product) {
+    return <p className="loading-product-productView">Cargando...</p>;
+  }
 
   return (
     <section className="product-page">
@@ -93,10 +95,12 @@ export default function Product() {
             {product.images?.map((img, index) => (
               <img
                 key={index}
-                src={img}
+                src={img.url}
                 alt=""
-                className={selectedImage === img ? "active" : ""}
-                onClick={() => setSelectedImage(img)}
+                className={
+                  selectedImage === img.url ? "active" : ""
+                }
+                onClick={() => setSelectedImage(img.url)}
               />
             ))}
           </div>
@@ -107,9 +111,14 @@ export default function Product() {
           <h1>{product.title}</h1>
 
           <div className="price">
-            <span className="regular">${product.regularPrice}</span>
+            <span className="regular">
+              ${product.regularPrice}
+            </span>
+
             {product.old_price && (
-              <span className="old">${product.old_price}</span>
+              <span className="old">
+                ${product.old_price}
+              </span>
             )}
           </div>
 
@@ -121,13 +130,16 @@ export default function Product() {
 
             <span>{quantity}</span>
 
-            <button onClick={() => setQuantity(q => q + 1)}>+</button>
+            <button onClick={() => setQuantity(q => q + 1)}>
+              +
+            </button>
           </div>
 
           <div className="actions">
             <button className="add" onClick={handleAddToOrder}>
               Agregar a la orden
             </button>
+
             <button className="buy" onClick={buyNow}>
               Comprar
             </button>

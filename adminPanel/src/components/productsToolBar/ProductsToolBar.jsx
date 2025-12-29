@@ -1,6 +1,7 @@
 import "./ProductsToolBar.css";
 import { useState, useEffect } from "react";
 import { getAllCategoriesReq } from "../../apiCalls/categoriesCalls";
+import { Link } from "react-router-dom";
 
 export default function ProductsToolbar({ filters, onChange }) {
   const [categorias, setCategorias] = useState([]);
@@ -92,8 +93,9 @@ export default function ProductsToolbar({ filters, onChange }) {
           <span>En oferta</span>
         </label>
       </div>
-
-      <button className="add-product">+ Add Product</button>
+      <Link to="/products/create">
+        <button className="add-product">+ Nuevo Producto</button>
+      </Link>
     </div>
   );
 }

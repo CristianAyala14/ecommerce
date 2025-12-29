@@ -119,3 +119,12 @@ export async function deleteProductReq(id) {
     return { ok: false, status: error.response?.status || 500, message: error.response?.data?.message || error.message };
   }
 }
+
+export async function createProductReq(newProduct) {
+  try {
+    const response = await axiosWithAuth.post("/products", newProduct);
+    return { ok: true, status: response.status, payload: response.data.payload };
+  } catch (error) {
+    return { ok: false, status: error.response?.status || 500, message: error.response?.data?.message || error.message };
+  }
+}

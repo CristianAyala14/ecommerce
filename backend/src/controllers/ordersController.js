@@ -123,6 +123,13 @@ class ordersController {
         populateProducts: true,
       });
 
+      if (!order) {
+        return res.status(404).json({
+          status: "error",
+          message: "Order not found.",
+        });
+      }
+
       if (order.status === "paid") {
         return res.status(403).json({
           status: "error",
@@ -130,10 +137,25 @@ class ordersController {
         });
       }
 
+      // Filtrar el item a eliminar
       order.items = order.items.filter(
         item => item.productId._id.toString() !== productId
       );
 
+      if (order.items.length === 0) {
+        // Si no quedan productos, eliminar la orden y la cookie
+        await ordersDao.deleteOrder(order._id);
+        res.clearCookie("orderId");
+
+
+        return res.status(200).json({
+          status: "success",
+          message: "Last item removed, order deleted.",
+          payload: null,
+        });
+      }
+
+      // Guardar cambios si aún quedan productos
       await ordersDao.save(order);
 
       res.status(200).json({
@@ -146,6 +168,7 @@ class ordersController {
       res.status(500).json({ status: "error", message: error.message });
     }
   }
+
 
   static async clearOrder(req, res) {
     try {

@@ -6,6 +6,11 @@
   justify-content: center;
 }
 
+.nuevos-ingresos-container p{
+  font-size: 1.2rem;
+  color: white
+}
+
 .nuevos-ingresos {
   width: 100%;
   max-width: 1200px;
