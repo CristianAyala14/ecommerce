@@ -87,9 +87,9 @@ axiosWithAuth.interceptors.response.use(
 
     // ❌ ERROR NORMAL
     return Promise.reject({
-      status: error.response.status,
+      status: error.response?.status || 0,
       message:
-        error.response.data?.message
+        error.response.data?.message || "No server response",
     });
   }
 );

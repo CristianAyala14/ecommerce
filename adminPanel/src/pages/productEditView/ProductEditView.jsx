@@ -1,26 +1,28 @@
 import "./ProductEditView.css";
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
-import {
-  getProductByIdReq,
-  updateProductReq,
-} from "../../apiCalls/productsCalls";
+import { useParams, useNavigate } from "react-router-dom";
+import { getProductByIdReq, updateProductReq } from "../../apiCalls/productsCalls";
 import { getAllCategoriesReq } from "../../apiCalls/categoriesCalls";
-import { uploadProductImgReq } from "../../apiCalls/uploadCalls";
 
 export default function ProductEditView() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const fileRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
 
-  const [editEnabled, setEditEnabled] = useState(false);
-  const [product, setProduct] = useState(null);
-  const [originalProduct, setOriginalProduct] = useState(null);
+  const [product, setProduct] = useState({
+    title: "",
+    description: "",
+    regularPrice: 0,
+    old_price: 0,
+    quantity: 1,
+    category: "",
+    offer: false,
+    new_insert: false,
+    images: [], // estas son las imágenes existentes del producto
+  });
 
-  // SOLO URLs para preview
-  const [previewImages, setPreviewImages] = useState([]);
-  // SOLO archivos nuevos
-  const [imageFiles, setImageFiles] = useState([]);
-
+  const [previewImages, setPreviewImages] = useState([]); // URLs para preview
+  const [imageFiles, setImageFiles] = useState([]);       // Archivos nuevos
   const [uploading, setUploading] = useState(false);
 
   const [categories, setCategories] = useState([]);
@@ -31,13 +33,11 @@ export default function ProductEditView() {
     const fetchProduct = async () => {
       const res = await getProductByIdReq(id);
       if (res.ok) {
-        setProduct(res.payload);
-        setOriginalProduct(res.payload);
-
-        setPreviewImages(
-          (res.payload.images || []).map((img) => img.url)
-        );
-
+        setProduct({
+          ...res.payload,
+          category: res.payload.category?._id || res.payload.category || ""
+        });
+        setPreviewImages((res.payload.images || []).map(img => img.url));
         setImageFiles([]);
       }
     };
@@ -47,6 +47,7 @@ export default function ProductEditView() {
   /* ================= FETCH CATEGORIES ================= */
   useEffect(() => {
     const fetchCategories = async () => {
+      setLoadingCategories(true);
       const res = await getAllCategoriesReq();
       if (res.ok) setCategories(res.payload);
       else setCategories([]);
@@ -55,45 +56,19 @@ export default function ProductEditView() {
     fetchCategories();
   }, []);
 
-  if (!product) return <p>Cargando producto...</p>;
-
-  const hasChanges =
-    JSON.stringify(product) !== JSON.stringify(originalProduct) ||
-    JSON.stringify(previewImages) !==
-      JSON.stringify(originalProduct.images.map((img) => img.url));
-
-  const enterEditMode = () => {
-    setEditEnabled(true);
-    setOriginalProduct(product);
-  };
-
-  const exitEditMode = () => {
-    if (hasChanges) {
-      const confirmExit = window.confirm(
-        "Tenés cambios sin guardar. ¿Descartarlos?"
-      );
-      if (!confirmExit) return;
-
-      setProduct(originalProduct);
-      setPreviewImages(originalProduct.images.map((img) => img.url));
-      setImageFiles([]);
-    }
-    setEditEnabled(false);
-  };
-
   /* ================= IMAGE CHANGE ================= */
   const handleImageChange = (file, index) => {
     if (!file) return;
 
     const tempURL = URL.createObjectURL(file);
 
-    setPreviewImages((prev) => {
+    setPreviewImages(prev => {
       const copy = [...prev];
       copy[index] = tempURL;
       return copy;
     });
 
-    setImageFiles((prev) => {
+    setImageFiles(prev => {
       const copy = [...prev];
       copy[index] = file;
       return copy;
@@ -102,153 +77,144 @@ export default function ProductEditView() {
 
   /* ================= SAVE ================= */
   const handleSave = async () => {
-    if (!product.category) {
-      alert("Debe seleccionar una categoría.");
+    if (!product.category || !product.title || !product.description) {
+      alert("Debe completar todos los datos.");
       return;
     }
 
     setUploading(true);
 
-    // Copiamos imágenes existentes (objetos completos)
-    const finalImages = [...product.images];
-
-    for (let i = 0; i < imageFiles.length; i++) {
-      if (!imageFiles[i]) continue;
-
+    try {
       const formData = new FormData();
-      formData.append("file", imageFiles[i]);
+      formData.append("title", product.title);
+      formData.append("description", product.description);
+      formData.append("regularPrice", product.regularPrice);
+      formData.append("old_price", product.old_price);
+      formData.append("quantity", product.quantity);
+      formData.append("category", product.category); // enviamos solo el _id
+      formData.append("offer", product.offer);
+      formData.append("new_insert", product.new_insert);
 
-      const res = await uploadProductImgReq(formData);
-      if (!res.ok) {
-        alert("Error subiendo imagen");
-        setUploading(false);
-        return;
+      // Adjuntar solo las imágenes nuevas
+      imageFiles.forEach(file => {
+        if (file) formData.append("images", file);
+      });
+
+      const res = await updateProductReq(id, formData);
+
+      if (res.ok) {
+        setProduct({
+          ...res.payload,
+          category: res.payload.category?._id || res.payload.category || ""
+        });
+        setPreviewImages(res.payload.images.map(img => img.url));
+        setImageFiles([]);
+        alert("Producto actualizado correctamente!");
+      } else {
+        alert("Error al guardar: " + res.message);
       }
-
-      finalImages[i] = {
-        url: res.url,
-        public_id: res.public_id,
-      };
-    }
-
-    if (finalImages.length === 0) {
-      alert("El producto debe tener al menos una imagen");
-      setUploading(false);
-      return;
-    }
-
-    const updatedProduct = {
-      ...product,
-      images: finalImages.filter(Boolean),
-    };
-
-    const result = await updateProductReq(id, updatedProduct);
-
-    if (result.ok) {
-      setProduct(result.payload);
-      setOriginalProduct(result.payload);
-      setPreviewImages(result.payload.images.map((img) => img.url));
-      setImageFiles([]);
-      setEditEnabled(false);
-      alert("Producto actualizado correctamente!");
-    } else {
-      alert("Error al guardar: " + result.message);
+    } catch (err) {
+      alert("Error al guardar: " + err.message);
     }
 
     setUploading(false);
   };
 
+  const noCategories = !loadingCategories && categories.length === 0;
+
   /* ================= RENDER ================= */
   return (
     <div className="product-wrapper">
-      <div className={`product-container ${editEnabled ? "edit-mode" : ""}`}>
+      <div className="product-container edit-mode">
+        {/* HEADER */}
         <div className="product-header">
           <button
             className="header-icon left"
-            onClick={editEnabled ? exitEditMode : enterEditMode}
+            onClick={() => navigate("/products")}
+            disabled={uploading}
           >
-            {editEnabled ? "✖" : "✏️"}
+            ✖
           </button>
 
           <h2>Editar producto</h2>
 
-          {editEnabled && (
-            <button
-              className="header-icon right"
-              onClick={handleSave}
-              disabled={uploading}
-            >
-              💾
-            </button>
-          )}
+          <button
+            className="header-icon right"
+            onClick={handleSave}
+            disabled={uploading || noCategories}
+          >
+            💾
+          </button>
         </div>
 
+        {/* IMAGES */}
         <div className="product-images">
-          {[0, 1, 2, 3].map((i) => (
+          {[0, 1, 2, 3].map(i => (
             <div
               key={i}
               className="image-slot"
-              onClick={() =>
-                editEnabled && !uploading && fileRefs[i].current.click()
-              }
+              onClick={() => !uploading && fileRefs[i].current.click()}
             >
               <input
                 type="file"
                 hidden
                 ref={fileRefs[i]}
                 accept="image/*"
-                disabled={!editEnabled || uploading}
+                disabled={uploading}
                 onChange={(e) => handleImageChange(e.target.files[0], i)}
               />
-              <div className={`product-image ${editEnabled ? "editable" : ""}`}>
+
+              <div className="product-image editable">
                 {previewImages[i] ? (
                   <img src={previewImages[i]} alt="product" />
                 ) : (
                   <span className="placeholder">📷</span>
                 )}
               </div>
+              
             </div>
           ))}
         </div>
 
+        {/* FORM */}
         <form className="product-form">
           <div className="form-group">
             <label>Título:</label>
             <input
-              disabled={!editEnabled || uploading}
+              disabled={uploading}
               value={product.title}
-              onChange={(e) =>
-                setProduct({ ...product, title: e.target.value })
-              }
+              onChange={(e) => setProduct({ ...product, title: e.target.value })}
             />
           </div>
 
           <div className="form-group">
             <label>Descripción:</label>
             <textarea
-              disabled={!editEnabled || uploading}
+              disabled={uploading}
               value={product.description}
-              onChange={(e) =>
-                setProduct({ ...product, description: e.target.value })
-              }
+              onChange={(e) => setProduct({ ...product, description: e.target.value })}
             />
           </div>
 
           <div className="form-group">
             <label>Categoría:</label>
             <select
-              disabled={!editEnabled || uploading || loadingCategories}
-              value={product.category || ""}
-              onChange={(e) =>
-                setProduct({ ...product, category: e.target.value })
-              }
+              disabled={uploading || noCategories}
+              value={product.category}
+              onChange={(e) => setProduct({ ...product, category: e.target.value })}
             >
-              <option value="">Seleccionar categoría</option>
-              {categories.map((cat) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.name}
-                </option>
-              ))}
+              {noCategories ? (
+                <option value="">Primero debes crear una categoría</option>
+              ) : (
+                <>
+                  <option value="">Seleccionar categoría</option>
+                  {categories.map(cat => (
+                    <option key={cat._id} value={cat._id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </>
+              )}
             </select>
           </div>
 
@@ -257,14 +223,9 @@ export default function ProductEditView() {
               <label>Precio:</label>
               <input
                 type="number"
-                disabled={!editEnabled || uploading}
+                disabled={uploading}
                 value={product.regularPrice}
-                onChange={(e) =>
-                  setProduct({
-                    ...product,
-                    regularPrice: e.target.value,
-                  })
-                }
+                onChange={(e) => setProduct({ ...product, regularPrice: e.target.value })}
               />
             </div>
 
@@ -273,14 +234,9 @@ export default function ProductEditView() {
                 <label>Precio anterior:</label>
                 <input
                   type="number"
-                  disabled={!editEnabled || uploading}
+                  disabled={uploading}
                   value={product.old_price || ""}
-                  onChange={(e) =>
-                    setProduct({
-                      ...product,
-                      old_price: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setProduct({ ...product, old_price: e.target.value })}
                 />
               </div>
             )}
@@ -289,14 +245,9 @@ export default function ProductEditView() {
               <label>Cantidad:</label>
               <input
                 type="number"
-                disabled={!editEnabled || uploading}
+                disabled={uploading}
                 value={product.quantity}
-                onChange={(e) =>
-                  setProduct({
-                    ...product,
-                    quantity: e.target.value,
-                  })
-                }
+                onChange={(e) => setProduct({ ...product, quantity: e.target.value })}
               />
             </div>
           </div>
@@ -305,11 +256,9 @@ export default function ProductEditView() {
             <label>
               <input
                 type="checkbox"
-                disabled={!editEnabled || uploading}
+                disabled={uploading}
                 checked={product.offer}
-                onChange={(e) =>
-                  setProduct({ ...product, offer: e.target.checked })
-                }
+                onChange={(e) => setProduct({ ...product, offer: e.target.checked })}
               />
               En oferta
             </label>
@@ -317,14 +266,9 @@ export default function ProductEditView() {
             <label>
               <input
                 type="checkbox"
-                disabled={!editEnabled || uploading}
+                disabled={uploading}
                 checked={product.new_insert}
-                onChange={(e) =>
-                  setProduct({
-                    ...product,
-                    new_insert: e.target.checked,
-                  })
-                }
+                onChange={(e) => setProduct({ ...product, new_insert: e.target.checked })}
               />
               Nuevo ingreso
             </label>

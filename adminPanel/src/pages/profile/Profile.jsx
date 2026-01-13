@@ -9,7 +9,6 @@ import {
 } from "../../redux/user/userSlice";
 import { useAuthContext } from "../../contexts/authContext";
 import { updateUserReq } from "../../apiCalls/userCalls";
-import { uploadProfileImgReq } from "../../apiCalls/uploadCalls";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 
@@ -69,7 +68,6 @@ export default function Profile() {
     else setValidNewPassword(true);
   }, [updateUser.newPassword]);
 
-  // Timer para mensajes temporales
   useEffect(() => {
     if (frontErrorMessage) {
       const timer = setTimeout(() => setFrontErrorMessage(""), 2000);
@@ -112,18 +110,6 @@ export default function Profile() {
     setEditEnabled(false);
   };
 
-  /* ================= UPLOAD IMAGE ================= */
-  const uploadImage = async (img) => {
-    const formData = new FormData();
-    formData.append("file", img);
-    const res = await uploadProfileImgReq(formData);
-    if (!res.ok) {
-      setFrontErrorMessage(res.message || "Error subiendo la imagen.");
-      return null;
-    }
-    return res.url;
-  };
-
   /* ================= HANDLE UPDATE ================= */
   const handleUpdate = async () => {
     setFrontErrorMessage("");
@@ -134,8 +120,10 @@ export default function Profile() {
     }
 
     if (updateUser.newPassword) {
-      if (!updateUser.currentPassword || !updateUser.newPassword) {
-        setFrontErrorMessage("Necesitas ingresar la contraseña actual y la nueva.");
+      if (!updateUser.currentPassword) {
+        setFrontErrorMessage(
+          "Necesitas ingresar la contraseña actual y la nueva."
+        );
         return;
       }
       if (!validCurrentPassword || !validNewPassword) {
@@ -149,31 +137,26 @@ export default function Profile() {
     try {
       dispatch(updateUserStart());
 
-      let profileImageUrl = updateUser.profileImage;
+      const formData = new FormData();
+      formData.append("userName", updateUser.userName);
+      formData.append("email", updateUser.email);
+      formData.append("currentPassword", updateUser.currentPassword);
+      formData.append("newPassword", updateUser.newPassword);
 
       if (img) {
-        const url = await uploadImage(img);
-        if (url) profileImageUrl = url;
+        formData.append("file", img);
       }
 
-      const updatedData = {
-        userName: updateUser.userName,
-        email: updateUser.email,
-        profileImage: profileImageUrl,
-        currentPassword: updateUser.currentPassword,
-        newPassword: updateUser.newPassword,
-      };
-
-      const res = await updateUserReq(updatedData);
+      const res = await updateUserReq(formData);
 
       if (!res.ok) {
         setFrontErrorMessage(res.message || "Error actualizando el perfil.");
         dispatch(updateUserFailure(res.message));
         return;
       }
+      dispatch(setAccessToken(res.payload.accessToken));
 
       dispatch(updateUserSuccess(res.payload.user));
-      dispatch(setAccessToken(res.payload.accessToken));
 
       setUpdateSuccess(true);
       setEditEnabled(false);
@@ -259,7 +242,9 @@ export default function Profile() {
             <div className="label-row">
               <label>Nombre de usuario: </label>
               {!validUserName && (
-                <span className="error-inline">Nombre de usuario invalido.</span>
+                <span className="error-inline">
+                  Nombre de usuario invalido.
+                </span>
               )}
             </div>
             <input
@@ -276,7 +261,9 @@ export default function Profile() {
           <div className="form-group">
             <div className="label-row">
               <label>E-mail:</label>
-              {!validEmail && <span className="error-inline">Invalid email</span>}
+              {!validEmail && (
+                <span className="error-inline">Invalid email</span>
+              )}
             </div>
             <input
               type="email"
@@ -293,18 +280,13 @@ export default function Profile() {
             <div className="form-group">
               <div className="label-row">
                 <label>Nueva contraseña: </label>
-                <span
-                  className={`icon ${
-                    updateUser.newPassword
-                      ? validNewPassword
-                        ? "show valid"
-                        : "show invalid"
-                      : ""
-                  }`}
-                >
+                <span className="icon">
                   {renderIcon(validNewPassword, updateUser.newPassword) && (
                     <FontAwesomeIcon
-                      icon={renderIcon(validNewPassword, updateUser.newPassword)}
+                      icon={renderIcon(
+                        validNewPassword,
+                        updateUser.newPassword
+                      )}
                     />
                   )}
                 </span>
@@ -315,7 +297,6 @@ export default function Profile() {
                 onChange={(e) =>
                   setUpdateUser({ ...updateUser, newPassword: e.target.value })
                 }
-                placeholder="********"
               />
             </div>
           )}
@@ -325,16 +306,11 @@ export default function Profile() {
             <div className="form-group">
               <div className="label-row">
                 <label>Contraseña actual: </label>
-                <span
-                  className={`icon ${
+                <span className="icon">
+                  {renderIcon(
+                    validCurrentPassword,
                     updateUser.currentPassword
-                      ? validCurrentPassword
-                        ? "show valid"
-                        : "show invalid"
-                      : ""
-                  }`}
-                >
-                  {renderIcon(validCurrentPassword, updateUser.currentPassword) && (
+                  ) && (
                     <FontAwesomeIcon
                       icon={renderIcon(
                         validCurrentPassword,
@@ -348,19 +324,22 @@ export default function Profile() {
                 type="password"
                 value={updateUser.currentPassword}
                 onChange={(e) =>
-                  setUpdateUser({ ...updateUser, currentPassword: e.target.value })
+                  setUpdateUser({
+                    ...updateUser,
+                    currentPassword: e.target.value,
+                  })
                 }
-                placeholder="********"
               />
             </div>
           )}
 
-          {/* SUCCESS / ERROR */}
           <div className="success-slot">
             {updateSuccess && (
               <p className="success">Perfil actualizado correctamente.</p>
             )}
-            {frontErrorMessage && <p className="error">{frontErrorMessage}</p>}
+            {frontErrorMessage && (
+              <p className="error">{frontErrorMessage}</p>
+            )}
           </div>
         </form>
       </div>

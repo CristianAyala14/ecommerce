@@ -1,0 +1,154 @@
+.categories-page {
+  height: 100vh;              /* 🔴 ocupa toda la pantalla */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;           /* 🔴 mata el scroll de página */
+  padding: 0.5rem;
+  gap: 0.5rem;
+  background: #f3f4f6;
+}
+
+/* HEADER */
+.categories-page-header {
+  flex-shrink: 0;
+  height: 70px;  
+  display: flex;
+  align-items: center;
+}
+
+.categories-page-header h1 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--color3);
+}
+
+/* ========================= */
+/* FORM CONTAINER */
+/* ========================= */
+.categories-form {
+  border: 1px solid #dcdcdc;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  background-color: #ffffff;
+  border-radius: 0.9rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* ========================= */
+/* INPUTS */
+/* ========================= */
+.categories-form input[type="text"] {
+  height: 2.2rem;
+  padding: 0 0.75rem;
+  font-size: 0.75rem;
+  border-radius: 0.6rem;
+  border: 1px solid #dcdcdc;
+  background-color: #fafafa;
+  color: #333;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.2s ease;
+  flex: 1;
+}
+
+.categories-form input::placeholder {
+  color: var(--color3);
+}
+
+.categories-form input:focus {
+  border-color: var(--color3);
+  box-shadow: 0 0 0 2px rgba(184, 184, 187, 0.2);
+  background-color: #ffffff;
+}
+
+/* ========================= */
+/* UPLOAD BUTTON */
+/* ========================= */
+.categories-upload {
+  height: 2.2rem;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.7rem;
+  border: 1px dashed #d0d0d0;
+  background-color: #fafafa;
+  color: #555;
+  cursor: pointer;
+  transition: border-color 0.2s ease,
+    background-color 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.categories-upload:hover {
+  border-color: var(--color3);
+  background-color: #ffffff;
+}
+
+/* ========================= */
+/* BANNER PREVIEW */
+/* ========================= */
+.categories-banner-preview {
+  width: 80px;
+  height: 45px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.categories-banner-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ========================= */
+/* SUBMIT BUTTON */
+/* ========================= */
+.categories-submit {
+  height: 2.2rem;
+  padding: 0 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.7rem;
+  border: none;
+  background-color: var(--color3);
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.categories-submit:hover {
+  background-color: #69cd6b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(124, 58, 237, 0.25);
+}
+
+.categories-submit:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ========================= */
+/* RESPONSIVE */
+/* ========================= */
+@media (max-width: 1200px) {
+  .categories-form {
+    flex-wrap: wrap;
+  }
+
+  .categories-form input[type="text"] {
+    flex: 1 1 100%;
+  }
+
+  .categories-upload,
+  .categories-submit {
+    width: 100%;
+    justify-content: center;
+  }
+}

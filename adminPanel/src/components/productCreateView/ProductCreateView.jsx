@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllCategoriesReq } from "../../apiCalls/categoriesCalls";
 import { createProductReq } from "../../apiCalls/productsCalls";
-import { uploadProductImgReq } from "../../apiCalls/uploadCalls";
 
 export default function ProductCreateView() {
   const navigate = useNavigate();
@@ -31,6 +30,7 @@ export default function ProductCreateView() {
   /* ================= FETCH CATEGORIES ================= */
   useEffect(() => {
     const fetchCategories = async () => {
+      setLoadingCategories(true);
       const res = await getAllCategoriesReq();
       if (res.ok) setCategories(res.payload);
       else setCategories([]);
@@ -71,41 +71,30 @@ export default function ProductCreateView() {
   /* ================= SAVE PRODUCT ================= */
   const handleSave = async () => {
     if (!product.title || !product.description || !product.category) {
-      alert("Debe completar título, descripción y categoría.");
+      alert("Debe completar todos los datos para poder crear el producto.");
       return;
     }
 
     setUploading(true);
 
-    /* ===== SUBIR IMÁGENES ===== */
-    const uploadedImages = [];
+    /* ===== CREAR FORM DATA ===== */
+    const formData = new FormData();
+    formData.append("title", product.title);
+    formData.append("description", product.description);
+    formData.append("regularPrice", product.regularPrice);
+    formData.append("old_price", product.old_price);
+    formData.append("quantity", product.quantity);
+    formData.append("category", product.category);
+    formData.append("offer", product.offer);
+    formData.append("new_insert", product.new_insert);
 
-    for (let i = 0; i < imageFiles.length; i++) {
-      if (!imageFiles[i]) continue;
-
-      const formData = new FormData();
-      formData.append("file", imageFiles[i]);
-
-      const res = await uploadProductImgReq(formData);
-      if (!res.ok) {
-        alert("Error subiendo imagen");
-        setUploading(false);
-        return;
-      }
-
-      uploadedImages.push({
-        url: res.url,
-        public_id: res.public_id,
-      });
-    }
+    // Adjuntar imágenes al FormData
+    imageFiles.forEach((file) => {
+      if (file) formData.append("images", file);
+    });
 
     /* ===== CREAR PRODUCTO ===== */
-    const newProduct = {
-      ...product,
-      images: uploadedImages,
-    };
-
-    const res = await createProductReq(newProduct);
+    const res = await createProductReq(formData);
 
     if (res.ok) {
       alert("Producto creado correctamente!");
