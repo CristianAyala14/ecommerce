@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { userDao } from "../database/dao_exports.js";
 import { genAccessToken, genRefreshToken } from "../config/tokens.js";
+import CloudinaryService from "../config/CloudinaryService.js";
 
 class userController {
 
@@ -28,7 +29,10 @@ class userController {
   }
 
   static updateUser = async (req, res) => {
+    let uploadedImage = null; // para rollback
+
     try {
+      /* ================= AUTH ================= */
       if (!req.user || !req.user.id) {
         return res.status(401).json({
           status: "error",
@@ -38,7 +42,18 @@ class userController {
 
       const validUser = await userDao.getUserById(req.user.id);
       if (!validUser) {
-        return res.status(400).json({ message: "User not found." });
+        return res.status(400).json({
+          status: "error",
+          message: "User not found.",
+        });
+      }
+
+      /* ================= IMAGE UPLOAD ================= */
+      if (req.file) {
+        uploadedImage = await CloudinaryService.uploadImage(
+          req.file.buffer,
+          "profile_images"
+        );
       }
 
       const {
@@ -46,15 +61,16 @@ class userController {
         userName,
         currentPassword,
         newPassword,
-        profileImage,
       } = req.body;
 
       const updatedData = {};
 
       /* ================= PASSWORD ================= */
       if (newPassword) {
-        // exigir password actual
         if (!currentPassword) {
+          if (uploadedImage)
+            await CloudinaryService.deleteImage(uploadedImage.public_id);
+
           return res.status(400).json({
             status: "error",
             message: "Current password is required.",
@@ -67,23 +83,45 @@ class userController {
         );
 
         if (!isValidPassword) {
+          if (uploadedImage)
+            await CloudinaryService.deleteImage(uploadedImage.public_id);
+
           return res.status(401).json({
             status: "error",
             message: "La contraseña actual es incorrecta.",
           });
         }
 
-        const hash = await bcrypt.hash(newPassword, 10);
-        updatedData.password = hash;
+        updatedData.password = await bcrypt.hash(newPassword, 10);
       }
 
       /* ================= OTHER FIELDS ================= */
       updatedData.email = email || validUser.email;
       updatedData.userName = userName || validUser.userName;
-      updatedData.profileImage =
-        profileImage || validUser.profileImage;
 
+      /* ================= PROFILE IMAGE ================= */
+      if (uploadedImage) {
+        updatedData.profileImage = {
+          url: uploadedImage.url,
+          public_id: uploadedImage.public_id,
+        };
+      } else {
+        updatedData.profileImage = validUser.profileImage;
+      }
+
+      /* ================= UPDATE USER ================= */
       const updated = await userDao.updateUser(req.user.id, updatedData);
+
+      /* ================= DELETE OLD IMAGE ================= */
+      if (
+        uploadedImage &&
+        validUser.profileImage &&
+        validUser.profileImage.public_id
+      ) {
+        await CloudinaryService.deleteImage(
+          validUser.profileImage.public_id
+        );
+      }
 
       /* ================= TOKENS ================= */
       const newUserAuthToken = {
@@ -95,7 +133,6 @@ class userController {
       const accessToken = genAccessToken(newUserAuthToken);
       const refreshToken = genRefreshToken(newUserAuthToken);
 
-      // limpiar cookie anterior
       res.cookie("refreshToken", "", {
         httpOnly: true,
         secure: true,
@@ -104,7 +141,6 @@ class userController {
         expires: new Date(0),
       });
 
-      // setear nueva
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
@@ -112,26 +148,34 @@ class userController {
         path: "/api/auth/refresh",
       });
 
-      const user = {
-        id: updated._id,
-        userName: updated.userName,
-        email: updated.email,
-        profileImage: updated.profileImage,
-      };
-
+      /* ================= RESPONSE ================= */
       res.status(200).json({
         status: "success",
         message: "User updated successfully.",
-        payload: user,
+        payload: {
+          id: updated._id,
+          userName: updated.userName,
+          email: updated.email,
+          profileImage: updated.profileImage.url, // { url, public_id }
+        },
         accessToken,
       });
+
     } catch (error) {
+      /* ================= ROLLBACK ================= */
+      if (uploadedImage) {
+        await CloudinaryService.deleteImage(uploadedImage.public_id);
+      }
+
       res.status(500).json({
         status: "error",
         message: error.message,
       });
     }
   };
+
+
+
 
 
   static deleteUser = async (req, res) => {

@@ -1,12 +1,15 @@
 import { Router } from "express";
 import { categoriesController } from "../controllers/categoriesController.js";
+import { validateAccessToken } from "../middlewares/validateAccessToken.js";
+import upload from "../config/multer.js";
+
 const router = Router();
 
 // CRUD completo de categorías
-router.post("/create", categoriesController.createCategory);
+router.post("/create", validateAccessToken, upload.single("file"),  categoriesController.createCategory);
 router.get("/", categoriesController.getAllCategories);
 router.get("/:id", categoriesController.getCategoryById);
-router.put("/:id", categoriesController.updateCategory);
+router.put("/:id", validateAccessToken, upload.single("file"),  categoriesController.updateCategory);
 router.delete("/:id", categoriesController.deleteCategory);
 
 export { router as categoriesRouter };

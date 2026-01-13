@@ -1,27 +1,51 @@
+// models/Category.js
 import mongoose from "mongoose";
+
 const collection = "categories";
+
 const categorySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true // Cada categoría debe ser única
+    unique: true,
+    trim: true
   },
+
   description: {
     type: String,
-    default: ""
+    default: "",
+    trim: true
   },
+
+  /* ===== BANNER (CLOUDINARY) ===== */
+  banner: {
+    type: {
+      url: {
+        type: String,
+        required: true
+      },
+      public_id: {
+        type: String,
+        required: true
+      }
+    },
+    required: true,
+    validate: {
+      validator: function (img) {
+        return (
+          img &&
+          typeof img.url === "string" &&
+          img.url.startsWith("https://") &&
+          typeof img.public_id === "string"
+        );
+      },
+      message: "El banner debe contener una url HTTPS válida y un public_id"
+    }
+  },
+
   createdAt: {
     type: Date,
     default: Date.now
-  },
-  banner: {
-    type: String,
-    required: true,
-    validate: {
-      validator: (url) =>
-        typeof url === "string" && url.startsWith("https://"),
-      message: "El banner debe ser una URL HTTPS válida (Firebase)"
-    }
   }
 });
 

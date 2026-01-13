@@ -17,7 +17,6 @@ import { categoriesRouter } from "./routes/categoriesRouter.js";
 import { ordersRouter } from "./routes/ordersRouter.js";
 import { userRouter } from "./routes/userRouter.js";
 import { authRouter } from "./routes/authRouter.js";
-import { imgRouter } from "./routes/imgRouter.js";
 
 //app set
 const app = express()
@@ -40,7 +39,6 @@ app.use("/api/user", userRouter)
 app.use("/api/products", productsRouter)
 app.use("/api/categories", categoriesRouter); 
 app.use("/api/orders", ordersRouter);
-app.use("/api/upload-img", imgRouter)
 
 //server run
 const PORT = envObject.server.port

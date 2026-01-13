@@ -39,7 +39,7 @@ class authController {
       res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true, sameSite: 'Lax', path: "/api/auth/refresh" });
 
       // payload
-      const user = { id: created._id, email: created.email, profileImage: created.profileImage, userName: created.userName };
+      const user = { id: created._id, email: created.email, profileImage: created.profileImage.url, userName: created.userName };
 
       res.status(200).json({
         status: "success",
@@ -77,7 +77,7 @@ class authController {
 
 
       // payload
-      const user = { id: validUser._id, userName: validUser.userName, email: validUser.email, profileImage: validUser.profileImage };
+      const user = { id: validUser._id, userName: validUser.userName, email: validUser.email, profileImage: validUser.profileImage.url };
 
       res.status(200).json({
         status: "success",
