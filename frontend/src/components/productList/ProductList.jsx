@@ -119,7 +119,7 @@ export default function ProductList({ category }) {
     (cat) => cat.name === filters.category
   );
 
-  const bannerUrl = currentCategory?.banner || banner_all_categories;
+  const bannerUrl = currentCategory?.banner.url || banner_all_categories;
 
   /* =========================
      Render

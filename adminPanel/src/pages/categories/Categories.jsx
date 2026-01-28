@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 import {
   getAllCategoriesReq,
   createCategoryReq,
+  deleteCategoryReq
 } from "../../apiCalls/categoriesCalls";
+import { Link } from "react-router-dom";
 
 export default function Categories() {
   const [categories, setCategories] = useState([]);
@@ -30,6 +32,7 @@ export default function Categories() {
       setLoadingCategories(false);
     }
   };
+  
 
   useEffect(() => {
     loadCategories();
@@ -51,6 +54,29 @@ export default function Categories() {
       bannerPreview: URL.createObjectURL(file),
     }));
   };
+
+
+  /* ================= DELETE ================= */
+
+  const deleteCategory = async (id) => {
+    const confirmSave = window.confirm(
+      "Estas por eliminar un producto. ¿Querés continuar?"
+    );
+
+    if (!confirmSave) return;
+
+    const res = await deleteCategoryReq(id);
+
+    if (res.ok) {
+      alert("Producto eliminado correctamente!");
+      setCategories((prev) =>
+        prev.filter((el) => el._id !== id)
+      );
+    }
+  };
+  
+
+
 
   /* ================= CREATE ================= */
   const handleSubmit = async (e) => {
@@ -149,6 +175,42 @@ export default function Categories() {
           {buttonText}
         </button>
       </form>
+      
+      {categories.length > 0 ? (
+        <div className="categories-viewer">
+          {categories.map((el)=>(
+            <div className="category-view" key={el._id}>
+              <div className="category-inner">
+                <div className="category-banner">
+                  <img src={el.banner.url} alt={el.name} />
+                </div>
+
+                <div className="category-content">
+                  <h3>{el.name}</h3>
+                  <p>{el.description}</p>
+                </div>
+              </div>
+
+              <div className="category-actions">
+                <Link
+                  to={`/categories/${el._id}`}
+                  className="category-link"
+                >
+                  <button className="edit">✏️</button>
+                </Link>
+
+                <button
+                  className="delete"
+                  onClick={() => deleteCategory(el._id)}
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>) : (<span className="no-categories">No hay categorias.</span>)}
+      
+
     </div>
   );
 }

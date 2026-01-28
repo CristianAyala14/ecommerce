@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import "./Order.css";
 import OrderCard from "../../components/orderCard/OrderCard";
 import { useOrderContext } from "../../contexts/orderContext";
+import { payOrderReq } from "../../apiCalls/ordersCalls";
+import { useNavigate } from "react-router-dom";
 
 export default function Order() {
+  const navigate = useNavigate();
   const {
     order,
     loading,
     updateQuantity,
     removeItem,
-    clear,
+    refreshOrder,
   } = useOrderContext();
 
   // Esperar a que termine el fetch inicial
@@ -33,6 +36,22 @@ export default function Order() {
     0
   );
 
+
+  const handlePay = async () => {
+    const res = await payOrderReq();
+
+    if (res.ok) {
+      alert("✅ Pago exitoso");
+
+      await refreshOrder(); // 🔥 deja order en null
+      navigate("/");
+    } else {
+      alert(res.message || "❌ Error al pagar");
+    }
+  };
+
+
+
   return (
     <div className="order-container">
       <div className="order-content">
@@ -49,7 +68,6 @@ export default function Order() {
                 regularPrice={item.productId.regularPrice}
                 quantity={item.quantity}
                 removeItem={removeItem}
-                clearOrder={clear}
                 onUpdateQuantity={updateQuantity}
               />
             ))
@@ -85,7 +103,7 @@ export default function Order() {
       </div>
 
       <div className="pay-button-container">
-        <button className="pay-button">
+        <button className="pay-button" onClick={handlePay}>
           Ir a pagar
         </button>
       </div>

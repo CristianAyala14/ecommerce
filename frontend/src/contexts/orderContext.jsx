@@ -4,12 +4,12 @@ import {
   addToOrderReq,
   updateOrderItemQuantity,
   removeItemFromOrder,
-  clearOrder,
 } from "../apiCalls/ordersCalls";
 
 const OrderContext = createContext();
 
 export function OrderProvider({ children }) {
+
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -83,20 +83,7 @@ export function OrderProvider({ children }) {
     return res;
   };
 
-  /* =========================
-     CLEAR ORDER
-  ========================= */
-  const clear = async () => {
-    const res = await clearOrder();
 
-    if (res.ok) {
-      setOrder(res.payload);
-    } else {
-      console.log(res.status, res.message);
-    }
-
-    return res;
-  };
 
   /* =========================
      TOTAL ITEMS COUNT
@@ -115,7 +102,6 @@ export function OrderProvider({ children }) {
         addItem,
         updateQuantity,
         removeItem,
-        clear,
       }}
     >
       {children}

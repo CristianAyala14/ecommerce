@@ -169,41 +169,6 @@ class ordersController {
     }
   }
 
-
-  static async clearOrder(req, res) {
-    try {
-      const orderId = req.cookies.orderId;
-
-      if (!orderId) {
-        return res.status(404).json({
-          status: "error",
-          message: "Order not found",
-        });
-      }
-
-      const order = await ordersDao.getOrderById(orderId);
-
-      if (order.status === "paid") {
-        return res.status(403).json({
-          status: "error",
-          message: "Paid orders cannot be modified.",
-        });
-      }
-
-      order.items = [];
-      await ordersDao.save(order);
-
-      res.status(200).json({
-        status: "success",
-        message: "Order cleared.",
-        payload: order,
-      });
-
-    } catch (error) {
-      res.status(500).json({ status: "error", message: error.message });
-    }
-  }
-
   static async updateQuantity(req, res) {
     try {
       const orderId = req.cookies.orderId;
@@ -267,7 +232,7 @@ class ordersController {
     }
   }
 
-  static async pay(req, res) {
+  static async payOrder(req, res) {
     try {
       const orderId = req.cookies.orderId;
 

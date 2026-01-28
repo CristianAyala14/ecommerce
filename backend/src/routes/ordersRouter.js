@@ -6,7 +6,7 @@ const router = Router();
 router.post("/", ordersController.add);
 router.get("/current", ordersController.getCurrentOrder);
 router.delete("/item/:productId", ordersController.removeItem);
-router.delete("/clear", ordersController.clearOrder);
 router.put("/quantity", ordersController.updateQuantity);
+router.post("/pay", ordersController.payOrder);
 
 export { router as ordersRouter };

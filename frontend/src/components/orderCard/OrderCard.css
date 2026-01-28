@@ -5,6 +5,9 @@
   align-items: center;
   justify-content: space-between;
   padding-right: 1rem;
+
+
+
 }
 
 .card-img-title{
@@ -14,13 +17,18 @@
 }
 
 .card-img-title img{
-  border-radius: 1rem;
-
+  border-radius: 0.5rem;
+  width: 4rem;
+  height: 4rem;      /* 🔥 alto fijo */
+  object-fit: cover center; /* 🔥 recorta sin deformar */
+  border-radius: 0.5rem;
+  
 }
 
 .card-img-title p{
   font-size: 0.6rem;
   width: 6rem;
+  font-weight: bolder;
 }
 
 .card-quantity{

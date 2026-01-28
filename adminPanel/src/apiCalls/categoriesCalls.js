@@ -21,6 +21,24 @@ export async function getAllCategoriesReq() {
   }
 }
 
+export async function getCategoryByIdReq(id) {
+  try {
+    const response = await axiosCall.get(`/categories/${id}`);
+
+    return {
+      ok: true,
+      status: response.status,
+      payload: response.data.payload,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: error.status,
+      message: error.message,
+    };
+  }
+}
+
 export async function createCategoryReq(newCategory) {
   try {
     const response = await axiosWithAuth.post("/categories/create", newCategory);

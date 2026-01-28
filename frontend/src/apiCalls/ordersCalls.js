@@ -90,23 +90,21 @@ export async function removeItemFromOrder(productId) {
   }
 }
 
-/* =========================
-   CLEAR ORDER
-========================= */
-export async function clearOrder() {
+
+export async function payOrderReq() {
   try {
-    const response = await axiosCall.delete("/orders/clear");
+    const response = await axiosCall.post("/orders/pay");
 
     return {
       ok: true,
       status: response.status,
-      payload: response.data.payload,
+      message: response.data.message,
     };
   } catch (error) {
     return {
       ok: false,
-      status: error.status,
-      message: error.message,
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
     };
   }
 }

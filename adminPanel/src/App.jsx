@@ -12,7 +12,7 @@ import Dashboard from "./pages/dashboard/Dashboard"
 import Products from "./pages/products/Products"
 import ProductEditView from "./pages/productEditView/ProductEditView"
 import Categories from "./pages/categories/Categories"
-import CategoryDetail from "./pages/categoryDetail/CategoryDetail"
+import EditCategory from "./pages/editCategory/EditCategory"
 import Orders from "./pages/orders/Orders"
 import OrderDetail from "./pages/orderDetail/OrderDetail"
 import Profile from "./pages/profile/Profile"
@@ -55,7 +55,7 @@ function App() {
 
                 {/* CATEGORIES */}
                 <Route path="/categories" element={<Categories />} />
-                <Route path="/categories/:id" element={<CategoryDetail />} />
+                <Route path="/categories/:id" element={<EditCategory/>} />
 
                 {/* ORDERS */}
                 <Route path="/orders" element={<Orders />} />

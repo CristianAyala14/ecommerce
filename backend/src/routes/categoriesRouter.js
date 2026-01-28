@@ -10,6 +10,7 @@ router.post("/create", validateAccessToken, upload.single("file"),  categoriesCo
 router.get("/", categoriesController.getAllCategories);
 router.get("/:id", categoriesController.getCategoryById);
 router.put("/:id", validateAccessToken, upload.single("file"),  categoriesController.updateCategory);
-router.delete("/:id", categoriesController.deleteCategory);
+router.delete("/:id", validateAccessToken, categoriesController.deleteCategory);
 
 export { router as categoriesRouter };
+ 
