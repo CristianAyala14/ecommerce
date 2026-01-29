@@ -10,7 +10,6 @@ import Profile from "./pages/profile/Profile"
 import Product from "./components/product/Product"
 import ScrollToTop from "./components/scrollToTop/scrollToTop";
 
-
 function App() {
 
   return (
@@ -25,6 +24,7 @@ function App() {
           <Route path="/about" element={<About/>}/>
           <Route path="/contact" element={<Contact/>}/>
           <Route path="/order" element={<Order/>}/>
+
           <Route path="/profile" element={<Profile/>}/>
         </Routes>
         <Footer/>

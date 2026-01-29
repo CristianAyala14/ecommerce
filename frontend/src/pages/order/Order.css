@@ -1,16 +1,18 @@
-.order-container{
+/* ====== ORIGINAL (sin tocar) ====== */
+
+.order-container {
   padding: 1rem;
   height: auto;
 }
 
-.order-content{
+.order-content {
   padding: 0.3rem;
   display: flex;
   gap: 0.5rem;
   height: 15rem;
 }
 
-.order-cards{
+.order-cards {
   border: 1px solid rgb(202, 202, 206);
   border-radius: 0.5rem;
   width: 60%;
@@ -21,11 +23,12 @@
   overflow-y: scroll;
 }
 
-.order-cards p, .order-details p{
+.order-cards p,
+.order-details p {
   font-size: 0.8rem;
 }
 
-.order-details{
+.order-details {
   border: 1px solid rgb(202, 202, 206);
   border-radius: 0.5rem;
   width: 40%;
@@ -33,49 +36,68 @@
   padding: 0.3rem;
 }
 
-.order-details-lines-container{
+.order-details-lines-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between; 
-    height: 100%; /* 👈 clave */
+  justify-content: space-between;
+  height: 100%;
 }
-.order-details-lines-container p{
+
+.order-details-lines-container p {
   font-size: 0.7rem;
 }
 
-
-.order-line-subtotal, .order-line-total{
+.order-line-subtotal,
+.order-line-total {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.order-line-title{
+.order-line-title {
   font-weight: bolder;
-
 }
 
-.order-line-total{
+.order-line-total {
   border-top: 1px solid black;
   padding-top: 0.5rem;
 }
 
-
-
-.loading-order-p, .no-order-p{
-  color: var(--color4);
+.loading-order-p,
+.no-order-p {
+  color: #333;
   padding: 1rem;
   font-size: 0.8rem;
   text-align: center;
   padding-block: 11rem;
 }
 
-
-.pay-button-container{
+.pay-shipping-container {
   padding: 1rem;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
+}
+
+.shipping-options {
+  display: flex;
+  gap: 1rem;
+}
+
+.shipping-options label {
+  display: flex;
+  gap: 0.2rem;
+  font-size: 0.8rem;
+}
+
+.shipping-button {
+  padding-inline: 0.5rem;
+  background-color: #b19139;
+  color: #fff;
+  border: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  font-size: 0.7rem;
 }
 
 .pay-button {
@@ -88,37 +110,139 @@
   font-size: 1.2rem;
 }
 
+.shipping-button:hover,
 .pay-button:hover {
   opacity: 0.85;
 }
 
-/* ================= RESPONSIVE ================= */
+/* ====== MODAL (mejorado, sin cambiar look) ====== */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+}
+
+.shipping-modal {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 0.6rem;
+  width: 30rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: fadeIn 0.2s ease-in-out;
+}
+.shipping-modal h3 {
+  margin-bottom: 0.5rem;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.shipping-modal-parts{
+  display: flex;
+  justify-content: space-around;
+  gap: 3rem;
+}
+
+.shipping-modal-1{
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
+.shipping-modal-2{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 10rem;
+}
+
+.shipping-modal-2 p{
+  font-size: 0.8rem;
+}
+.calculated-cost strong{
+    font-size: 0.8rem;
+
+}
+
+
+
+.shipping-modal input {
+  padding: 0.3rem;
+  border-radius: 0.3rem;
+  border: 1px solid #ccc;
+  font-size: 0.6rem;
+  height: 2rem;
+  width: 10rem;
+}
+
+.shipping-modal button {
+  padding: 0.1rem;
+  width: 6rem;
+  border-radius: 0.3rem;
+  border: none;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.btn-retirar {
+  background: red;
+  color: white;
+}
+
+.btn-aceptar {
+  background: green;
+  color: white;
+}
+
+/* ====== RESPONSIVE ORIGINAL ====== */
+
 @media (max-width: 768px) {
-
-  .order-container{
-    height: auto;
-  }
-
-  .order-content{
+  .order-content {
     flex-direction: column;
     height: auto;
   }
 
   .order-cards,
-  .order-details{
+  .order-details {
     width: 100%;
   }
 
-  .order-cards{
+  .order-cards {
     overflow-y: visible;
   }
 
-  .pay-button-container{
-    justify-content: center;
-  }
-
-  .pay-button{
+  .pay-button {
     width: 100%;
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

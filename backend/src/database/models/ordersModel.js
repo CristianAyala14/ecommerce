@@ -1,8 +1,12 @@
 import mongoose from "mongoose";
+
 const collection = "orders";
 
 const orderSchema = new mongoose.Schema(
   {
+    /* ===================== */
+    /* ITEMS DEL CARRITO     */
+    /* ===================== */
     items: [
       {
         productId: {
@@ -17,33 +21,71 @@ const orderSchema = new mongoose.Schema(
       },
     ],
 
+    /* ===================== */
+    /* ESTADO DE LA ORDEN    */
+    /* ===================== */
     status: {
       type: String,
       enum: ["draft", "paid", "processing", "shipped", "canceled"],
       default: "draft",
     },
 
-    customer: {
-      name: {
+    /* ===================== */
+    /* DATOS DEL COMPRADOR   */
+    /* ===================== */
+    buyer: {
+      name: { type: String },
+      lastname: { type: String},
+      email: { type: String, lowercase: true },
+      phone: { type: String },
+    },
+
+    /* ===================== */
+    /* ENVÍO                 */
+    /* ===================== */
+    shipping: {
+      type: {
         type: String,
-        default: "Guest",
+        enum: ["delivery", "pickup"],
+        
       },
-      email: {
-        type: String,
-        lowercase: true,
-        default: "",
+
+      cost: {
+        type: Number,
+        default: 0,
       },
-      phone: {
-        type: String,
+
+      address: {
+        province: String,
+        city: String,
+        street: String,
+        number: String,
       },
     },
 
+    /* ===================== */
+    /* PAGO                  */
+    /* ===================== */
+    payment: {
+      method: {
+        type: String,
+        enum: ["cash", "mercadopago"],
+      },
 
-    
+      status: {
+        type: String,
+        enum: ["pending", "paid", "rejected"],
+        default: "pending",
+      },
+
+      transactionId: String,
+    },
+
+
   },
   { timestamps: true }
 );
+
 const ordersModel = mongoose.model(collection, orderSchema);
 
-
-export default ordersModel
+export default ordersModel;
