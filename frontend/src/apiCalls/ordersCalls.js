@@ -49,6 +49,73 @@ export async function updateOrderItemQuantity({ productId, quantity }) {
 }
 
 /* =========================
+   UPDATE SHIPPING
+========================= */
+export async function updateOrderShippingReq({
+    shippingType,
+    shippingCost,
+    province,
+    city,
+    street,
+    number,
+  }) {
+    try {
+      const response = await axiosCall.put("/orders/shipping", {
+        shippingType,
+        shippingCost,
+        province,
+        city,
+        street,
+        number
+      });
+
+      return {
+        ok: true,
+        status: response.status,
+        payload: response.data.payload,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        status: error.response?.status,
+        message: error.response?.data?.message || error.message,
+      };
+    }
+}
+
+/* =========================
+   UPDATE BUYER
+========================= */
+export async function updateOrderBuyerReq({
+    name,
+    lastname,
+    email,
+    phone
+  }) {
+    try {
+      const response = await axiosCall.put("/orders/buyer", {
+        name,
+        lastname,
+        email,
+        phone
+      });
+
+      return {
+        ok: true,
+        status: response.status,
+        payload: response.data.payload,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        status: error.response?.status,
+        message: error.response?.data?.message || error.message,
+      };
+    }
+}
+
+
+/* =========================
    GET CURRENT ORDER
 ========================= */
 export async function getCurrentOrder() {

@@ -232,9 +232,22 @@ class ordersController {
     }
   }
 
-  static async payOrder(req, res) {
+  static async updateShipping(req, res) {
+    const orderId = req.cookies.orderId;
+
+    const {
+      shippingType,
+      shippingCost,
+      province,
+      city,
+      street,
+      number
+    } = req.body;
+
     try {
-      const orderId = req.cookies.orderId;
+      /* ============================= */
+      /* VALIDACIONES BÁSICAS           */
+      /* ============================= */
 
       if (!orderId) {
         return res.status(404).json({
@@ -243,37 +256,150 @@ class ordersController {
         });
       }
 
-      const order = await ordersDao.getOrderById(orderId);
-
-      if (!order || order.items.length === 0) {
+      if (!shippingType) {
         return res.status(400).json({
           status: "error",
-          message: "Order is empty.",
+          message: "System needs a shipping type.",
+        });
+      }
+
+      const allowedTypes = ["delivery", "pickup"];
+      if (!allowedTypes.includes(shippingType)) {
+        return res.status(400).json({
+          status: "error",
+          message: "Shipping type is not allowed.",
+        });
+      }
+
+      /* ============================= */
+      /* VALIDACIONES DELIVERY          */
+      /* ============================= */
+
+      if (shippingType === "delivery") {
+        if (shippingCost === undefined || shippingCost === null) {
+          return res.status(400).json({
+            status: "error",
+            message: "Delivery type needs a cost value.",
+          });
+        }
+
+        if (!province || !city || !street || !number) {
+          return res.status(400).json({
+            status: "error",
+            message: "Delivery address is incomplete.",
+          });
+        }
+      }
+
+      /* ============================= */
+      /* BUSCAR ORDEN                   */
+      /* ============================= */
+
+      const order = await ordersDao.getOrderById(orderId, {
+        populateProducts: true,
+      });
+
+      if (!order) {
+        return res.status(404).json({
+          status: "error",
+          message: "Order not found.",
         });
       }
 
       if (order.status === "paid") {
-        return res.status(400).json({
+        return res.status(403).json({
           status: "error",
-          message: "Order already paid.",
+          message: "Paid orders cannot be modified.",
         });
       }
 
-      order.status = "paid";
+      /* ============================= */
+      /* ACTUALIZAR SHIPPING            */
+      /* ============================= */
+
+      order.shipping.type = shippingType;
+
+      if (shippingType === "delivery") {
+        order.shipping.cost = shippingCost;
+        order.shipping.address = {
+          province,
+          city,
+          street,
+          number,
+        };
+      } else {
+        // pickup
+        order.shipping.cost = 0;
+        order.shipping.address = undefined;
+      }
+
       await ordersDao.save(order);
 
-      res.clearCookie("orderId");
+      /* ============================= */
+      /* RESPUESTA                      */
+      /* ============================= */
 
       res.status(200).json({
         status: "success",
-        message: "Order paid successfully.",
+        message: "Shipping updated successfully.",
         payload: order,
       });
 
     } catch (error) {
-      res.status(500).json({ status: "error", message: error.message });
+      res.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
   }
-}
+
+  static async updateBuyer(req, res) {
+    
+  }
+
+
+    static async payOrder(req, res) {
+      try {
+        const orderId = req.cookies.orderId;
+
+        if (!orderId) {
+          return res.status(404).json({
+            status: "error",
+            message: "Order not found.",
+          });
+        }
+
+        const order = await ordersDao.getOrderById(orderId);
+
+        if (!order || order.items.length === 0) {
+          return res.status(400).json({
+            status: "error",
+            message: "Order is empty.",
+          });
+        }
+
+        if (order.status === "paid") {
+          return res.status(400).json({
+            status: "error",
+            message: "Order already paid.",
+          });
+        }
+
+        order.status = "paid";
+        await ordersDao.save(order);
+
+        res.clearCookie("orderId");
+
+        res.status(200).json({
+          status: "success",
+          message: "Order paid successfully.",
+          payload: order,
+        });
+
+      } catch (error) {
+        res.status(500).json({ status: "error", message: error.message });
+      }
+    }
+  }
 
 export { ordersController };

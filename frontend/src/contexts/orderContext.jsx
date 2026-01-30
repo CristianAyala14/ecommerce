@@ -4,6 +4,8 @@ import {
   addToOrderReq,
   updateOrderItemQuantity,
   removeItemFromOrder,
+  updateOrderShippingReq,
+  updateOrderBuyerReq
 } from "../apiCalls/ordersCalls";
 
 const OrderContext = createContext();
@@ -32,6 +34,8 @@ export function OrderProvider({ children }) {
     refreshOrder().finally(() => setLoading(false));
   }, []);
 
+
+
   /* =========================
      ADD ITEM
   ========================= */
@@ -46,6 +50,8 @@ export function OrderProvider({ children }) {
 
     return res;
   };
+
+
 
   /* =========================
      UPDATE QUANTITY
@@ -64,6 +70,42 @@ export function OrderProvider({ children }) {
 
     return res;
   };
+
+    /* =========================
+     UPDATE SHIPPING
+  ========================= */
+  const updateShipping = async (shippingType, shippingCost, address) => {
+    const res = await updateOrderShippingReq({
+      shippingType,
+      shippingCost,
+      ...(address || {}),
+    });
+
+    if (res.ok) {
+      setOrder(res.payload);
+    } else {
+      console.log(res.status, res.message);
+    }
+
+    return res;
+  };
+
+   const updateBuyer = async (buyerForm) => {
+    const res = await updateOrderBuyerReq({
+      ...buyerForm,
+    });
+
+    if (res.ok) {
+      setOrder(res.payload);
+    } else {
+      console.log(res.status, res.message);
+    }
+
+    return res;
+  };
+
+
+
 
   /* =========================
      REMOVE ITEM
@@ -102,6 +144,8 @@ export function OrderProvider({ children }) {
         addItem,
         updateQuantity,
         removeItem,
+        updateShipping,
+        updateBuyer
       }}
     >
       {children}

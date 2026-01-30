@@ -1,42 +1,92 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./Order.css";
 import OrderCard from "../../components/orderCard/OrderCard";
 import { useOrderContext } from "../../contexts/orderContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Order() {
-  const [shippingType, setShippingType] = useState(null);
+  const { order, loading, updateQuantity, removeItem, updateShipping, updateBuyer } = useOrderContext();
   const [shippingWindow, setShippingWindow] = useState(false);
-  const [shippingCost, setShippingCost] = useState(0);
   const [calculatedCost, setCalculatedCost] = useState(null);
-
+  const [buyerWindow, setBuyerWindow] = useState(false);
   const [shippingForm, setShippingForm] = useState({
     province: "",
     city: "",
     street: "",
     number: "",
-    shippingType: shippingType,
-    shippingType: shippingCost
+  });
+  const [buyerForm, setBuyerForm] = useState({
+    name: "",
+    lastname: "",
+    email: "",
+    phone: "",
   });
 
-  const navigate = useNavigate();
-  const { order, loading, updateQuantity, removeItem } = useOrderContext();
+  
 
-  if (loading) return <p className="loading-order-p">Cargando...</p>;
-  if (!order) return <p className="no-order-p">Tu carrito está vacío.</p>;
+ 
+  /* =========================
+     🔁 PRECARGAR FORMS AL ABRIR MODAL
+  ========================= */
+  
+  useEffect(() => {
+    if (!shippingWindow) return;
 
-  const subtotal = order.items.reduce(
-    (acc, item) => acc + item.quantity * item.productId.regularPrice,
-    0
-  );
+    if (order.shipping?.address) {
+      setShippingForm({
+        province: order.shipping.address.province || "",
+        city: order.shipping.address.city || "",
+        street: order.shipping.address.street || "",
+        number: order.shipping.address.number || "",
+      });
 
-  const total = subtotal + shippingCost;
+      setCalculatedCost(order.shipping.cost || null);
+    } else {
+      setShippingForm({
+        province: "",
+        city: "",
+        street: "",
+        number: "",
+      });
 
-  const handleFormChange = (e) => {
+      setCalculatedCost(null);
+    }
+  }, [shippingWindow, order?.shipping]);
+
+  useEffect(() => {
+    if (!buyerWindow) return;
+
+    if (order.buyer) {
+      setBuyerForm({
+        name: order.buyer.name || "",
+        lastname: order.buyer.lastname || "",
+        email: order.buyer.email || "",
+        phone: order.buyer.phone || "",
+      });
+
+    } else {
+      setBuyerForm({
+        name: "",
+        lastname: "",
+        email: "",
+        phone: "",
+      });
+    }
+  }, [buyerWindow, order?.buyer]);
+
+
+  //handles change para los forms
+  const handleShippingFormChange = (e) => {
     const { name, value } = e.target;
     setShippingForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleBuyerFormChange = (e) => {
+    const { name, value } = e.target;
+    setBuyerForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  //pending
   const calculateShipping = () => {
     const { province, city, street, number } = shippingForm;
     if (!province || !city || !street || !number) {
@@ -46,19 +96,70 @@ export default function Order() {
     setCalculatedCost(18000);
   };
 
-  const acceptShipping = () => {
-    setShippingCost(calculatedCost);
-    setShippingWindow(false);
+  /* =========================
+     DELIVERY
+  ========================= */
+  const acceptShipping = async () => {
+    const res = await updateShipping("delivery", calculatedCost, shippingForm);
+
+    if (res.ok) {
+      setShippingWindow(false);
+    } else {
+      alert(res.message);
+    }
   };
 
-  const choosePickup = () => {
-    setShippingType("pickup");
-    setShippingCost(0);
-    setCalculatedCost(null);
-    setShippingWindow(false);
+  /* =========================
+     PICKUP
+  ========================= */
+  const choosePickup = async () => {
+    const res = await updateShipping("pickup", 0, null);
+
+    if (res.ok) {
+      setCalculatedCost(null);
+      setShippingWindow(false);
+    } else {
+      alert(res.message);
+    }
   };
+
+   /* =========================
+     BUYER
+  ========================= */
+  const saveBuyer = async () =>{
+    const {name, lastname, email, phone} = buyerForm;
+    if(!name || !lastname || !email || !phone){
+      alert("Debe completar el formulario de comprador para continuar.")
+      return
+    } 
+    
+    const res = await updateBuyer(buyerForm)
+    if (res.ok) {
+      setBuyerWindow(false);
+    } else {
+      alert(res.message);
+    }
+  }
+
 
   const handlePay = () => console.log("pasarela de pago");
+
+
+  if (loading) return <p className="loading-order-p">Cargando...</p>;
+  if (!order) return <p className="no-order-p">Tu carrito está vacío.</p>;
+
+    /* =========================
+     SOURCE OF TRUTH
+  ========================= */
+  const shippingType = order.shipping?.type || null;
+  const shippingCost = order.shipping?.cost || 0;
+
+   const subtotal = order.items.reduce(
+    (acc, item) => acc + item.quantity * item.productId.regularPrice,
+    0
+  );
+
+  const total = subtotal + shippingCost;
 
   return (
     <div className="order-container">
@@ -119,7 +220,7 @@ export default function Order() {
             <input
               type="radio"
               checked={shippingType === "delivery"}
-              onChange={() => setShippingType("delivery")}
+              onChange={() => setShippingWindow(true)}
             />
             Solicitar envío
           </label>
@@ -132,14 +233,20 @@ export default function Order() {
               Gestionar envío
             </button>
           )}
+          <button
+              className="buyer-button"
+              onClick={() => setBuyerWindow(true)}
+            >
+              Datos de comprador
+          </button>
         </div>
 
         <button
           className="pay-button"
           onClick={handlePay}
-          disabled={!shippingType}
+          disabled={!order.shipping?.type || !order.buyer}
         >
-          Ir a pagar
+          Pagar
         </button>
       </div>
 
@@ -148,24 +255,44 @@ export default function Order() {
           <div className="shipping-modal">
             <h3>Dirección de envío</h3>
             <div className="shipping-modal-parts">
-              
               <div className="shipping-modal-1">
-              
-              <input name="province" placeholder="Provincia" onChange={handleFormChange} />
-              <input name="city" placeholder="Ciudad" onChange={handleFormChange} />
-              <input name="street" placeholder="Calle" onChange={handleFormChange} />
-              <input name="number" placeholder="Número" onChange={handleFormChange} />
-              
-              <button className="calculate-btn" onClick={calculateShipping}>
-                Calcular envío
-              </button>
-              </div >        
-            
+                <input
+                  name="province"
+                  placeholder="Provincia"
+                  value={shippingForm.province}
+                  onChange={handleShippingFormChange}
+                />
+                <input
+                  name="city"
+                  placeholder="Ciudad"
+                  value={shippingForm.city}
+                  onChange={handleShippingFormChange}
+                />
+                <input
+                  name="street"
+                  placeholder="Calle"
+                  value={shippingForm.street}
+                  onChange={handleShippingFormChange}
+                />
+                <input
+                  name="number"
+                  placeholder="Número"
+                  value={shippingForm.number}
+                  onChange={handleShippingFormChange}
+                />
+
+                <button className="calculate-btn" onClick={calculateShipping}>
+                  Calcular envío
+                </button>
+              </div>
+
               <div className="shipping-modal-2">
                 <p className="calculated-cost">
-                    Costo calculado:{" "}
-                    <strong>${calculatedCost? calculatedCost.toLocaleString("es-AR") : 0}</strong>
-                  </p>
+                  Costo calculado:{" "}
+                  <strong>
+                    ${calculatedCost ? calculatedCost.toLocaleString("es-AR") : 0}
+                  </strong>
+                </p>
 
                 {calculatedCost && (
                   <div className="modal-buttons">
@@ -179,13 +306,50 @@ export default function Order() {
                   </div>
                 )}
               </div>
-
             </div>
-            
-            
           </div>
         </div>
       )}
+
+      {buyerWindow && (
+        <div className="modal-buyer-overlay">
+          <div className="buyer-modal">
+            <h3>Datos de comprador </h3>
+            <div className="buyer-modal-form">
+              <input
+                name="name"
+                placeholder="Nombre"
+                value={buyerForm.name}
+                onChange={handleBuyerFormChange}
+              />
+              <input
+                name="lastname"
+                placeholder="Apellido"
+                value={buyerForm.lastname}
+                onChange={handleBuyerFormChange}
+              />
+              <input
+                name="email"
+                placeholder="E-mail"
+                value={buyerForm.email}
+                onChange={handleBuyerFormChange}
+              />
+              <input
+                name="phone"
+                placeholder="Celular"
+                value={buyerForm.phone}
+                onChange={handleBuyerFormChange}
+              />
+
+              <button className="buyer-form-btn" onClick={saveBuyer}>
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }
